@@ -8,7 +8,7 @@ sequenceDiagram
 
     B->>+S: POST: exampleapp/new_note<br/> (containing form info)
 
-    note over S: Server-side JS code alters <br/> data.json with new data
+    note over B, S: Server-side JS code alters <br/> data.json with new data
     S-->>-B: RESPONSE: 302 Found<br/> Redirect to /exampleapp/notes
 
     B->>+S: GET: exampleapp/notes
