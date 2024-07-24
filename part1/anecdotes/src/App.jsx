@@ -1,8 +1,4 @@
-import { useState } from 'react'
-
-function randomIndex(arrayLength) {
-    return Math.floor((Math.random() * arrayLength))
-}
+import {useState} from 'react'
 
 const App = () => {
     const anecdotes = [
@@ -17,11 +13,29 @@ const App = () => {
     ]
 
     const [selected, setSelected] = useState(0)
+    const [anecdoteVotes, setAnecdoteVotes] = useState(Array(anecdotes.length).fill(0))
+    function randomIndex(array) {
+        return Math.floor((Math.random() * array.length))
+    }
+
+    function changeAnecdote(){
+        const index = randomIndex(anecdotes)
+        setSelected(index)
+    }
+
+    function increaseVote() {
+        console.log("vote for index", selected, "is now", anecdoteVotes[selected]+1);
+        const newVotes = [...anecdoteVotes];
+        newVotes[selected] += 1;
+        setAnecdoteVotes(newVotes)
+    }
 
     return (
         <div>
             <p>{anecdotes[selected]}</p>
-            <button onClick={() => setSelected(randomIndex(anecdotes.length))}>next anecdote</button>
+            <p>has {anecdoteVotes[selected]} votes</p>
+            <button onClick={increaseVote}>vote</button>
+            <button onClick={changeAnecdote}>next anecdote</button>
         </div>
 
     )
