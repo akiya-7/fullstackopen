@@ -5,19 +5,36 @@ const App = () => {
         { name: 'Arto Hellas' }
     ])
     const [newName, setNewName] = useState('')
+    const [newPhoneNumber, setNewPhoneNumber] = useState('')
+
+    const clearFields = () => {
+        setNewName('')
+        setNewPhoneNumber('')
+    }
 
     const handleNameChange = (e) => {
         console.log(e.target.value)
         setNewName(e.target.value)
     }
+    const handleNumberChange = (e) => {
+        console.log(e.target.value)
+        setNewPhoneNumber(e.target.value)
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        console.log('name', newName, 'submitted.')
+
         const newPersons = [...persons]
-        newPersons.push({name: newName})
-        setPersons(newPersons)
-        setNewName('')
+        const peopleNames = newPersons.map((person) => person.name)
+
+        if (peopleNames.includes(newName)) {
+            alert(`${newName} is already added to phonebook`)
+        } else {
+            newPersons.push({name: newName, phoneNumber: newPhoneNumber})
+            setPersons(newPersons)
+            console.log('name', newName, 'with phone number', newPhoneNumber)
+            clearFields()
+        }
     }
 
     return (
@@ -26,8 +43,13 @@ const App = () => {
             <form onSubmit={handleSubmit}>
                 <div>
                     name: <input
-                value={newName}
-                onChange={handleNameChange}/>
+                    value={newName}
+                    onChange={handleNameChange}/>
+                </div>
+                <div>
+                    number: <input
+                    value={newPhoneNumber}
+                    onChange={handleNumberChange}/>
                 </div>
                 <div>
                     <button type="submit">add</button>
@@ -35,7 +57,7 @@ const App = () => {
             </form>
             <h2>Numbers</h2>
             {persons.map(person => (
-                <p key={person.name}>{person.name}</p>
+                <p key={person.name}>{person.name} {person.phoneNumber}</p>
             ))}
         </div>
     )
