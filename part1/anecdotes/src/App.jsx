@@ -1,4 +1,17 @@
 import {useState} from 'react'
+const uninitialized = -1
+
+const Anecdote = ( {anecdotes, votes, index, children} ) => {
+    if (index === uninitialized){return null}
+
+    return (
+        <>
+            <h1>{children}</h1>
+            <p>{anecdotes[index]}</p>
+            <p>has {votes[index]} votes</p>
+        </>
+    )
+}
 
 const App = () => {
     const anecdotes = [
@@ -14,12 +27,11 @@ const App = () => {
 
     const [selected, setSelected] = useState(0)
     const [anecdoteVotes, setAnecdoteVotes] = useState(Array(anecdotes.length).fill(0))
-    function randomIndex(array) {
-        return Math.floor((Math.random() * array.length))
-    }
+    const [mostVotesIndex, setMostVotesIndex] = useState(uninitialized)
 
     function changeAnecdote(){
-        const index = randomIndex(anecdotes)
+        console.log("ANECDOTE CHANGE--")
+        const index = Math.floor((Math.random() * anecdotes.length))
         setSelected(index)
     }
 
@@ -28,15 +40,32 @@ const App = () => {
         const newVotes = [...anecdoteVotes];
         newVotes[selected] += 1;
         setAnecdoteVotes(newVotes)
+        checkMostVote(newVotes)
+    }
+
+    function checkMostVote(votes) {
+
+        if (mostVotesIndex === uninitialized) {
+            console.log("MOST VOTE SET--", "Most Votes Index:", mostVotesIndex)
+            setMostVotesIndex(selected)
+        }
+        else {
+            if (votes[selected] > votes[mostVotesIndex]) {
+                setMostVotesIndex(selected)
+                console.log("NEW MOST--","Most Votes Index:", mostVotesIndex)
+            }
+        }
     }
 
     return (
-        <div>
-            <p>{anecdotes[selected]}</p>
-            <p>has {anecdoteVotes[selected]} votes</p>
-            <button onClick={increaseVote}>vote</button>
-            <button onClick={changeAnecdote}>next anecdote</button>
-        </div>
+        <>
+            <div>
+                <Anecdote anecdotes={anecdotes} votes={anecdoteVotes} index={selected}>Anecdote of the Day</Anecdote>
+                <button onClick={increaseVote}>vote</button>
+                <button onClick={changeAnecdote}>next anecdote</button>
+                <Anecdote anecdotes={anecdotes} votes={anecdoteVotes} index={mostVotesIndex}>Anecdote with most votes</Anecdote>
+            </div>
+        </>
 
     )
 }
