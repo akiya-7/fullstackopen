@@ -1,4 +1,7 @@
 const Persons = ( {persons, filter} ) => {
+    if (!persons || !Array.isArray(persons)) {
+        return null;
+    }
     let filteredPersons = persons.filter((person) =>
         person.name.toLowerCase().includes(filter.toLowerCase()))
 
