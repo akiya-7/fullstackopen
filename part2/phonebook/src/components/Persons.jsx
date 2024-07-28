@@ -11,7 +11,7 @@ const Persons = ( {persons, filter, onPersonDelete} ) => {
             <div key={person.id}>
                 <p>
                     {person.name} {person.number}
-                    <button onClick={() => onPersonDelete(person.id)}>delete</button>
+                    <button onClick={() => onPersonDelete(person)}>delete</button>
                 </p>
             </div>
             )
