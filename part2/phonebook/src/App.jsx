@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import Filter from './components/Filter'
-import personsService from './services/personsService.js';
+import personsService from './services/persons.js';
 
 const App = () => {
 
@@ -36,6 +36,16 @@ const App = () => {
             console.log(persons.concat(newPerson))
         }
     }
+    const handleDeletePerson = (id) => {
+        if (confirm("woah there bucko, are you sure?") === true){
+            personsService
+                .deleteObject(id)
+                .then(() => {
+                    setPersons(persons.filter(person => person.id !== id))
+                })
+        }
+    }
+
 
     return (
         <div>
@@ -47,7 +57,7 @@ const App = () => {
             <PersonForm persons={persons} onPersonSubmit={handleNewPerson} />
 
             <h2>Numbers</h2>
-            <Persons persons={persons} filter={filter}></Persons>
+            <Persons persons={persons} filter={filter} onPersonDelete={handleDeletePerson}></Persons>
         </div>
     )
 }
