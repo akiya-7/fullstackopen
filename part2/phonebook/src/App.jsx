@@ -33,11 +33,9 @@ const App = () => {
         setFilter(filter)
     }
     const handleNewPerson = (newPerson) => {
-        const errorMessage = ``
 
         personsService
             .create(newPerson)
-            .catch(error => displayAlert(errorMessage, 'error'))
             .then(newPerson => {
                 setPersons(persons.concat(newPerson))}
             )
@@ -47,12 +45,13 @@ const App = () => {
         console.log('name', newPerson.name, 'with phone number', newPerson.number)
     }
     const handleNumberUpdate = (newPerson) => {
+        const alertMessage = `Updated ${newPerson.name} with phone number ${newPerson.number}`
         personsService
             .update(newPerson.id, newPerson)
             .then(returnedPerson => {
-                setPersons(persons.map(person => person.id !== newPerson.id ? person : returnedPerson))})
+                setPersons(persons.map(person => person.id !== newPerson.id ? person : returnedPerson))
+                displayAlert(alertMessage, 'success')})
     };
-
     const handlePersonSubmit = (newPerson) => {
         const names = [...persons].map((person) => person.name)
         const existingPerson = names.includes(newPerson.name)
@@ -72,10 +71,12 @@ const App = () => {
         }
     }
     const handleDeletePerson = (personToDelete) => {
+        const errorMessage = `Information for ${personToDelete.name} has already been removed from server`
         if (confirm(`Delete ${personToDelete.name}?`))
         {
             personsService
                 .deleteObject(personToDelete.id)
+                .catch(() => displayAlert(errorMessage, 'error'))
                 .then(() =>
                 {
                     setPersons(persons.filter(person => person.id !== personToDelete.id))
