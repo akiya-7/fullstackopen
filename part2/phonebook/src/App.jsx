@@ -39,13 +39,11 @@ const App = () => {
             .then(newPerson => {
                 setPersons(persons.concat(newPerson))}
             )
-        const alertMessage= `name ${newPerson.name} with phone number ${newPerson.number}`
-        displayAlert(alertMessage, "success")
-
-        console.log('name', newPerson.name, 'with phone number', newPerson.number)
+        const successMessage= `${newPerson.name} (${newPerson.number}) has been added!`
+        displayAlert(successMessage, "success")
     }
     const handleNumberUpdate = (newPerson) => {
-        const alertMessage = `Updated ${newPerson.name} with phone number ${newPerson.number}`
+        const alertMessage = `Updated ${newPerson.name}'s phone number to ${newPerson.number}`
         personsService
             .update(newPerson.id, newPerson)
             .then(returnedPerson => {
@@ -72,6 +70,7 @@ const App = () => {
     }
     const handleDeletePerson = (personToDelete) => {
         const errorMessage = `Information for ${personToDelete.name} has already been removed from server`
+        const successMessage = `Contact for ${personToDelete.name} has been deleted successfully.`
         if (confirm(`Delete ${personToDelete.name}?`))
         {
             personsService
@@ -79,6 +78,7 @@ const App = () => {
                 .catch(() => displayAlert(errorMessage, 'error'))
                 .then(() =>
                 {
+                    displayAlert(successMessage, "success")
                     setPersons(persons.filter(person => person.id !== personToDelete.id))
                 })
         }
@@ -92,7 +92,7 @@ const App = () => {
             <h3>Add a new... </h3>
             <PersonForm persons={persons} onPersonSubmit={handlePersonSubmit} />
             <h2>Numbers</h2>
-            <Persons persons={persons} filter={filter} onPersonDelete={handleDeletePerson}></Persons>
+            <Persons persons={persons} filter={filter} onPersonDelete={handleDeletePerson} />
         </div>
     )
 }

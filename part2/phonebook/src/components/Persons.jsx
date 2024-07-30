@@ -7,15 +7,25 @@ const Persons = ( {persons, filter, onPersonDelete} ) => {
         person.name.toLowerCase().includes(filter.toLowerCase()))
 
     return(
-        filteredPersons.map(person => (
-            <div key={person.id}>
-                <p>
-                    {person.name} {person.number}
-                    <button onClick={() => onPersonDelete(person)}>delete</button>
-                </p>
-            </div>
-            )
-        )
+        <table>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Phone Number</th>
+            </tr>
+            </thead>
+            <tbody>
+            {filteredPersons.map(person => (
+                <tr key={person.id}>
+                    <td>{person.name}</td>
+                    <td>{person.number}</td>
+                    <td>
+                        <button onClick={() => onPersonDelete(person)}>delete</button>
+                    </td>
+                </tr>
+            ))}
+            </tbody>
+        </table>
     )
 }
 
