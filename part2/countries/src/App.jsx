@@ -7,9 +7,10 @@ import countriesService from "./services/countries.js";
 function App() {
     const [filter, setFilter] = useState('')
     const [country, setCountry] = useState(null)
-    const [countryNames, setCountryNames] = useState([]);
+    const [countryNames, setCountryNames] = useState([])
+    const [countryInfo, setCountryInfo] = useState(null)
 
-    // get data
+    // get all country names for querying
     useEffect(() => {
         console.log("effect");
         countriesService
@@ -23,19 +24,31 @@ function App() {
             });
     }, []);
 
+    // get selected country info
+    useEffect(() => {
+        if(country)
+            countriesService
+                .getCountry(country)
+                .then(response => setCountryInfo(response))
+        else
+            setCountryInfo(null)
+    }, [country])
+
     const handleFilter = (filter) => {
         setFilter(filter)
-        console.log(filter)
     }
-    const handleCountrySelect = (country) => {
-        setCountry(country)
+    const handleCountrySelect = (selectedCountry) => {
+        if (selectedCountry)
+            setCountry(selectedCountry)
+        else
+            setCountry(null)
     }
 
     return(
         <>
             <Filter onFilterChange={handleFilter}/>
             <CountryList countries={countryNames} keyword={filter} onCountrySelect={handleCountrySelect}/>
-            <CountryInfo country={country}/>
+            <CountryInfo country={countryInfo}/>
         </>
     );
 }
