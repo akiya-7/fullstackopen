@@ -2,4 +2,8 @@ import ReactDOM from 'react-dom/client'
 
 import App from './App'
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App />)
+const appStyle = {
+    backgroundColor: 'coral'
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App style={appStyle} />)

@@ -12,7 +12,7 @@ function App() {
 
     // get all country names for querying
     useEffect(() => {
-        console.log("effect");
+        console.log("get all countries...");
         countriesService
             .getAll()
             .then(countries => {
@@ -38,12 +38,8 @@ function App() {
         setFilter(filter)
     }
     const handleCountrySelect = (selectedCountry) => {
-        if (selectedCountry)
-            setCountry(selectedCountry)
-        else
-            setCountry(null)
+            setCountry(selectedCountry || null)
     }
-
     return(
         <>
             <Filter onFilterChange={handleFilter}/>

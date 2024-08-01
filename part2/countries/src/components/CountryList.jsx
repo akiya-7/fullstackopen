@@ -10,7 +10,6 @@ const CountryList = ({ countries, keyword, onCountrySelect}) => {
     const filteredCountries = countries.filter(containsKeyword)
 
     if (filteredCountries.length > 10) {
-        onCountrySelect(null);
         return <p>Too many matches, specify another filter</p>
     }
 
@@ -18,11 +17,15 @@ const CountryList = ({ countries, keyword, onCountrySelect}) => {
         onCountrySelect(filteredCountries[0]);
         return null;
     }
+    else{
+        onCountrySelect(null);
+    }
 
-    onCountrySelect(null)
     return (
         <ul>
-            {filteredCountries.map(country => (<li key={country}>{country}</li>))}
+            {filteredCountries.map(country => (
+                    <li key={country}>{country} <button onClick={() => {onCountrySelect(country)}}>show</button></li>
+            ))}
         </ul>
     )
 }
