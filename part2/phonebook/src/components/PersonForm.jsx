@@ -20,7 +20,7 @@ const PersonForm = ({onPersonSubmit} ) => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        onPersonSubmit( {name: newName, phoneNumber: newPhoneNumber} )
+        onPersonSubmit( {name: newName, number: newPhoneNumber, id: newName} )
         clearFields()
     }
     return (

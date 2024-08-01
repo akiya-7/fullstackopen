@@ -8,9 +8,8 @@ const Filter = ({ onFilterChange }) => {
     }
     return(
         <div>
-            <p>filter shown with
-                {<input
-                onChange={handleFilterChange}/>}
+            <p>
+                filter shown with: {<input onChange={handleFilterChange}/>}
             </p>
         </div>
     )
