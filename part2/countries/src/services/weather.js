@@ -16,4 +16,4 @@ const getWeatherIcon = (iconCode) => {
 }
 
 
-export default {getWeather}
+export default {getWeather, getWeatherIcon}

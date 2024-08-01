@@ -5,7 +5,7 @@ const Filter = ({ onFilterChange }) => {
     }
 
     return(
-        <div>
+        <div id={'filter'}>
             <p>Find Countries: <input onChange={handleFilterChange}></input></p>
         </div>
     )

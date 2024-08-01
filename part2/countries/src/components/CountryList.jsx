@@ -22,7 +22,7 @@ const CountryList = ({ countries, keyword, onCountrySelect}) => {
     }
 
     return (
-        <ul>
+        <ul id="country-list">
             {filteredCountries.map(country => (
                     <li key={country}>{country} <button onClick={() => {onCountrySelect(country)}}>show</button></li>
             ))}
