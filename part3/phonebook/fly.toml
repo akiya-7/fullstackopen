@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for fullstackopen-part03-bitter-shadow-151 on 2024-08-11T13:31:41+10:00
+# fly.toml app configuration file generated for fullstackopen-part03-winter-silence-9353 on 2024-08-11T15:02:56+10:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'fullstackopen-part03-bitter-shadow-151'
+app = 'fullstackopen-part03-winter-silence-9353'
 primary_region = 'syd'
 
 [build]
