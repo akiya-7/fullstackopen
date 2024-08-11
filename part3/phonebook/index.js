@@ -23,7 +23,7 @@ app.get('/api/persons', (req, res) => {
       res.json(result)
     })
 })
-app.post('/api/persons/', (req, res) => {
+app.post('/api/persons/', (req, res, next) => {
   const newPerson = req.body
 
   if (!newPerson) {
@@ -37,15 +37,15 @@ app.post('/api/persons/', (req, res) => {
 
   person.save()
     .then(savedNote => res.json(savedNote))
+    .catch(error => next(error))
 })
 
 app.get('/api/info', (req, res) => {
   const dayInfo = new Date(Date.now())
-  let personsLength
 
-  Person.find({}).then(list => {
-    personsLength = list.length
-    const info = `<p>Phonebook has info for ${personsLength} people <br/><br/> ${dayInfo}</p>`
+  Person.countDocuments()
+    .then(length => {
+    const info = `<p>Phonebook has info for ${length} people <br/><br/> ${dayInfo}</p>`
     res.send(info)
   })
 })
