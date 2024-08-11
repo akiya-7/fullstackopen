@@ -42,13 +42,19 @@ const App = () => {
         const successMessage= `${newPerson.name} (${newPerson.number}) has been added!`
         displayAlert(successMessage, "success")
     }
-    const handleNumberUpdate = (newPerson) => {
-        const alertMessage = `Updated ${newPerson.name}'s phone number to ${newPerson.number}`
+    const handleNumberUpdate = (updatedInfo) => {
+        const alertMessage = `Updated ${updatedInfo.name}'s phone number to ${updatedInfo.number}`
+        const existingPerson = persons.find(person => person.name === updatedInfo.name)
+
         personsService
-            .update(newPerson.id, newPerson)
-            .then(returnedPerson => {
-                setPersons(persons.map(person => person.id !== newPerson.id ? person : returnedPerson))
-                displayAlert(alertMessage, 'success')})
+            .update(existingPerson.id, updatedInfo)
+            .then(() => {
+                return personsService.getAll();
+            })
+            .then(people => {
+                setPersons(people);
+                displayAlert(alertMessage, 'success');
+            })
     };
     const handlePersonSubmit = (newPerson) => {
         const names = [...persons].map((person) => person.name)
