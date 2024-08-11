@@ -60,6 +60,10 @@ const App = () => {
         setPersons(people);
         displayAlert(alertMessage, 'success');
       })
+      .catch(error => {
+        console.log(error.response.data.error)
+        displayAlert(error.response.data.error, "error")
+      })
   };
   const handlePersonSubmit = (newPerson) => {
     const names = [...persons].map((person) => person.name)

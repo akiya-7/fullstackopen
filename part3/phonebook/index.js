@@ -45,9 +45,9 @@ app.get('/api/info', (req, res) => {
 
   Person.countDocuments()
     .then(length => {
-    const info = `<p>Phonebook has info for ${length} people <br/><br/> ${dayInfo}</p>`
-    res.send(info)
-  })
+      const info = `<p>Phonebook has info for ${length} people <br/><br/> ${dayInfo}</p>`
+      res.send(info)
+    })
 })
 
 app.get('/api/persons/:id', (req, res, next) => {
@@ -67,13 +67,16 @@ app.get('/api/persons/:id', (req, res, next) => {
     .catch(error => next(error))
 
 })
-app.put('/api/persons/:id', (req, res) => {
-  const id = req.params.id
+app.put('/api/persons/:id', (req, res, next) => {
+  const existingPerson = req.params
   const updatedInfo = req.body
 
-  Person.findByIdAndUpdate(id, { id: id, name: updatedInfo.name, number: updatedInfo.number }).then(
+  Person.findByIdAndUpdate(existingPerson.id,
+    { id: existingPerson.id, name: existingPerson.name, number: updatedInfo.number },
+    { runValidators: true }).then(
     update => res.json(update)
   )
+    .catch(error => {next(error)})
 })
 
 const errorHandler = (error, request, response, next) => {
