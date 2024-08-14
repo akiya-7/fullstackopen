@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-const baseUrl = 'https://fullstackopen-part03-winter-silence-9353.fly.dev/api/persons'
-//const baseUrl = 'http://localhost:3000/api/persons'
+// const baseUrl = 'https://fullstackopen-part03-winter-silence-9353.fly.dev/api/persons'
+const baseUrl = 'http://localhost:3000/api/persons'
 
 
 const getAll = () => {
