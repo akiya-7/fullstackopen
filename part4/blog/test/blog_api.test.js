@@ -1,4 +1,5 @@
 const { test, after, beforeEach } = require('node:test')
+const assert = require('assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
@@ -17,11 +18,20 @@ beforeEach( async () => {
 
 })
 
-test.only('blog info is returned as json', async () => {
+test('blog info is returned as json', async () => {
   await api
     .get("/api/blogs")
     .expect(200)
     .expect('Content-Type', /application\/json/)
+})
+test.only("unique identifier property is named id.", async () => {
+  const response = await api.get("/api/blogs")
+  const blogs = response.body
+
+  blogs.forEach(blog => {
+    assert.ok(blog.id)
+    assert.ok(!blog._id)
+  })
 })
 
 after(async () => {
