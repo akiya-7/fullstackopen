@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
-const {testListBlogs} = require('../utils/example_lists')
+const {testListBlogs, blogToPost} = require('../utils/example_lists')
 
 
 const api = supertest(app)
@@ -24,7 +24,7 @@ test('blog info is returned as json', async () => {
     .expect(200)
     .expect('Content-Type', /application\/json/)
 })
-test.only("unique identifier property is named id.", async () => {
+test("unique identifier property is named id.", async () => {
   const response = await api.get("/api/blogs")
   const blogs = response.body
 
@@ -32,6 +32,22 @@ test.only("unique identifier property is named id.", async () => {
     assert.ok(blog.id)
     assert.ok(!blog._id)
   })
+})
+test.only("insure blog is being added to database correctly", async () => {
+  const databaseLength = (await api.get("/api/blogs")).body.length
+
+  const response = await api
+      .post("/api/blogs")
+      .send(blogToPost)
+  const savedBlog = response.body
+  const newDatabaseLength = (await api.get("/api/blogs")).body.length
+
+  assert.equal(savedBlog.title, blogToPost.title)
+  assert.equal(savedBlog.author, blogToPost.author)
+  assert.equal(savedBlog.url, blogToPost.url)
+  assert.equal(savedBlog.likes, blogToPost.likes)
+  assert.equal(databaseLength + 1, newDatabaseLength)
+
 })
 
 after(async () => {

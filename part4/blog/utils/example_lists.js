@@ -58,5 +58,11 @@ const testListBlogs = [
     __v: 0
   }
 ]
+const blogToPost = {
+  title: "TITLE",
+  author: "AUTHOR",
+  url: "URL",
+  likes: 5,
+}
 
-module.exports = {listWithOneBlog, testListBlogs}
+module.exports = {listWithOneBlog, testListBlogs, blogToPost}
