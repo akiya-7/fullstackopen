@@ -64,5 +64,11 @@ const blogToPost = {
   url: "URL",
   likes: 5,
 }
+const blogNoLikes = {
+  title: "No Likes",
+  author: "AUTHOR",
+  url: "URL",
+}
 
-module.exports = {listWithOneBlog, testListBlogs, blogToPost}
+module.exports = {listWithOneBlog, testListBlogs,
+  blogToPost, blogNoLikes}

@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
-const {testListBlogs, blogToPost} = require('../utils/example_lists')
+const {testListBlogs, blogToPost, blogNoLikes} = require('../utils/example_lists')
 
 
 const api = supertest(app)
@@ -33,7 +33,7 @@ test("unique identifier property is named id.", async () => {
     assert.ok(!blog._id)
   })
 })
-test.only("insure blog is being added to database correctly", async () => {
+test("insure blog is being added to database correctly", async () => {
   const databaseLength = (await api.get("/api/blogs")).body.length
 
   const response = await api
@@ -48,6 +48,15 @@ test.only("insure blog is being added to database correctly", async () => {
   assert.equal(savedBlog.likes, blogToPost.likes)
   assert.equal(databaseLength + 1, newDatabaseLength)
 
+})
+test.only("verify missing likes defaults to 0 on post", async () => {
+  const response = await api
+
+  .post("/api/blogs")
+  .send(blogNoLikes)
+  const savedBlog = response.body
+
+  assert(savedBlog.likes === 0)
 })
 
 after(async () => {
