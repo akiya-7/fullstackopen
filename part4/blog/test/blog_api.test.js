@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
-const {testListBlogs, blogToPost} = require('../utils/example_lists')
+const lists = require('../utils/example_lists')
 
 
 const api = supertest(app)
@@ -12,7 +12,7 @@ const api = supertest(app)
 beforeEach( async () => {
   await Blog.deleteMany()
 
-  const blogObjects = testListBlogs.map(blog => new Blog(blog))
+  const blogObjects = lists.testListBlogs.map(blog => new Blog(blog))
   const promiseArray = blogObjects.map(blog => blog.save())
   await Promise.all(promiseArray)
 
@@ -33,7 +33,7 @@ test("unique identifier property is named id.", async () => {
     assert.ok(!blog._id)
   })
 })
-test.only("insure blog is being added to database correctly", async () => {
+test("insure blog is being added to database correctly", async () => {
   const databaseLength = (await api.get("/api/blogs")).body.length
 
   const response = await api
@@ -48,6 +48,33 @@ test.only("insure blog is being added to database correctly", async () => {
   assert.equal(savedBlog.likes, blogToPost.likes)
   assert.equal(databaseLength + 1, newDatabaseLength)
 
+})
+test("verify missing likes defaults to 0 on post", async () => {
+  const response = await api
+
+  .post("/api/blogs")
+  .send(blogNoLikes)
+  const savedBlog = response.body
+
+  assert(savedBlog.likes === 0)
+})
+test.only("insure title and url", async () => {
+  const blogNoTitle = lists.blogNoTitle
+  const blogNoUrl = lists.blogNoUrl
+
+  const titleResponse = await
+      api
+      .post("/api/blogs/")
+      .send(blogNoTitle)
+      .expect(400)
+  assert(titleResponse.body.error.includes("Path `title` is required"))
+
+  const urlResponse = await
+      api
+      .post("/api/blogs/")
+      .send(blogNoUrl)
+      .expect(400)
+  assert(urlResponse.body.error.includes("Path `url` is required"))
 })
 
 after(async () => {
