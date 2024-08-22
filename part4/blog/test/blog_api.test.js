@@ -85,7 +85,13 @@ test.only("delete existing item", async () => {
   assert.deepEqual(response.body,
       { message: "Successfully deleted", blog: blog })
 })
-
+test.only("attempt to delete non existent item", async () => {
+  const randomID = Math.floor(Math.random() * 5)
+  const errorMessage = await api.delete(`/api/blogs/${randomID}`).expect(404)
+  assert.deepStrictEqual(errorMessage.body,
+  { error: `Cast to ObjectId failed for value "${randomID}" ` +
+        `(type string) at path "_id" for model "Blog"`})
+})
 after(async () => {
   await mongoose.connection.close()
 })
