@@ -58,7 +58,7 @@ test("verify missing likes defaults to 0 on post", async () => {
 
   assert(savedBlog.likes === 0)
 })
-test.only("insure title and url", async () => {
+test("insure title and url", async () => {
   const blogNoTitle = lists.blogNoTitle
   const blogNoUrl = lists.blogNoUrl
 
@@ -75,6 +75,15 @@ test.only("insure title and url", async () => {
       .send(blogNoUrl)
       .expect(400)
   assert(urlResponse.body.error.includes("Path `url` is required"))
+})
+
+
+test.only("delete existing item", async () => {
+  const blog = lists.blogToDelete
+
+  const response = await api.delete(`/api/blogs/${blog.id}`)
+  assert.deepEqual(response.body,
+      { message: "Successfully deleted", blog: blog })
 })
 
 after(async () => {

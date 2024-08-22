@@ -79,6 +79,13 @@ const blogNoUrl = {
   author: "AUTHOR",
   likes: 0,
 }
+const blogToDelete = {
+  author: 'Michael Chan',
+  id: '5a422a851b54a676234d17f7',
+  likes: 7,
+  title: 'React patterns',
+  url: 'https://reactpatterns.com/'
+}
 
 module.exports = {listWithOneBlog, testListBlogs,
-  blogToPost, blogNoLikes, blogNoTitle, blogNoUrl}
+  blogToPost, blogNoLikes, blogNoTitle, blogNoUrl, blogToDelete}
