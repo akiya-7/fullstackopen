@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const userRouter = require("express").Router();
 const User = require("../models/User");
+const validate = require("../utils/validate");
 
 userRouter.get("/", async (req, res) => {
   const users = await User.find({})
@@ -8,12 +9,29 @@ userRouter.get("/", async (req, res) => {
 })
 
 userRouter.post("/", async (req, res) => {
-  const userDetails = req.body
+  const {username, name, password} = req.body
+
+  if(!validate.username(username)) {
+    return res.status(400).json(
+        {error: "Username must contain at least 3 characters"}).end()
+  }
+  if(!validate.password(password)) {
+    return res.status(400).json(
+        {error: "Password must contain at least 3 characters"}).end()
+  }
+
+  if (!password) {
+    return res.status(400).json({
+      error: "Password is required",
+    });
+  }
+
+  const passwordHash = await bcrypt.hash(password, 10)
 
   const user = new User({
-    username: userDetails.username,
-    name: userDetails.name,
-    passwordHash: await bcrypt.hash(userDetails.password, 10)
+    username: username,
+    name: name,
+    passwordHash: passwordHash
   })
 
   const savedUser = await user.save()
