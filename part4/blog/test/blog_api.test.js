@@ -1,4 +1,4 @@
-const { test, after, beforeEach } = require('node:test')
+const { test, after, beforeEach, describe } = require('node:test')
 const assert = require('assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
@@ -35,6 +35,7 @@ test("unique identifier property is named id.", async () => {
 })
 test("insure blog is being added to database correctly", async () => {
   const databaseLength = (await api.get("/api/blogs")).body.length
+  const blogToPost = lists.blogToPost
 
   const response = await api
       .post("/api/blogs")
@@ -50,11 +51,13 @@ test("insure blog is being added to database correctly", async () => {
 
 })
 test("verify missing likes defaults to 0 on post", async () => {
+  const blogNoLikes = lists.blogNoLikes
   const response = await api
-
   .post("/api/blogs")
   .send(blogNoLikes)
+
   const savedBlog = response.body
+  console.log(savedBlog.likes);
 
   assert(savedBlog.likes === 0)
 })
@@ -77,21 +80,37 @@ test("insure title and url", async () => {
   assert(urlResponse.body.error.includes("Path `url` is required"))
 })
 
+describe("test delete functionality", () => {
+  test("delete existing item", async () => {
+    const blog = lists.testListBlogs[0]
 
-test.only("delete existing item", async () => {
-  const blog = lists.blogToDelete
+    const response = await api.delete(`/api/blogs/${blog.id}`)
+    assert.deepEqual(response.body,
+        { message: "Successfully deleted", blog: blog })
+  })
+  test("attempt to delete non existent item", async () => {
+    const randomID = Math.floor(Math.random() * 5)
+    const errorMessage = await api.delete(`/api/blogs/${randomID}`).expect(404)
+    assert.deepStrictEqual(errorMessage.body,
+        { error: `Cast to ObjectId failed for value "${randomID}" ` +
+              `(type string) at path "_id" for model "Blog"`})
+  })
+})
 
-  const response = await api.delete(`/api/blogs/${blog.id}`)
-  assert.deepEqual(response.body,
-      { message: "Successfully deleted", blog: blog })
+test.only("test like update", async () => {
+  const blog = lists.testListBlogs[1]
+
+  blog.likes = 1612
+
+  const updatedBlog = await
+      api.put(`/api/blogs/${blog._id}`)
+      .send(blog)
+
+  assert.equal(updatedBlog.body.likes, 1612)
+
 })
-test.only("attempt to delete non existent item", async () => {
-  const randomID = Math.floor(Math.random() * 5)
-  const errorMessage = await api.delete(`/api/blogs/${randomID}`).expect(404)
-  assert.deepStrictEqual(errorMessage.body,
-  { error: `Cast to ObjectId failed for value "${randomID}" ` +
-        `(type string) at path "_id" for model "Blog"`})
-})
+
+
 after(async () => {
   await mongoose.connection.close()
 })
