@@ -12,7 +12,7 @@ const api = supertest(app)
 beforeEach( async () => {
   await Blog.deleteMany()
 
-  const blogObjects = lists.testListBlogs.map(blog => new Blog(blog))
+  const blogObjects = lists.importBlogList.map(blog => new Blog(blog))
   const promiseArray = blogObjects.map(blog => blog.save())
   await Promise.all(promiseArray)
 
@@ -82,7 +82,7 @@ test("insure title and url", async () => {
 
 describe("test delete functionality", () => {
   test("delete existing item", async () => {
-    const blog = lists.testListBlogs[0]
+    const blog = lists.importBlogList[0]
 
     const response = await api.delete(`/api/blogs/${blog.id}`)
     assert.deepEqual(response.body,
@@ -97,8 +97,8 @@ describe("test delete functionality", () => {
   })
 })
 
-test.only("test like update", async () => {
-  const blog = lists.testListBlogs[1]
+test("test like update", async () => {
+  const blog = lists.importBlogList[1]
 
   blog.likes = 1612
 
@@ -109,7 +109,6 @@ test.only("test like update", async () => {
   assert.equal(updatedBlog.body.likes, 1612)
 
 })
-
 
 after(async () => {
   await mongoose.connection.close()

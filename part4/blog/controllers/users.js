@@ -1,15 +1,17 @@
 const bcrypt = require('bcrypt');
 const userRouter = require("express").Router();
-const User = require("../models/User");
+const User = require("../models/user");
 const validate = require("../utils/validate");
 
 userRouter.get("/", async (req, res) => {
-  const users = await User.find({})
+  const users = await User
+    .find({})
+    .populate("blogs", {title: 1, author: 1, url: 1})
   res.json(users)
 })
 
 userRouter.post("/", async (req, res) => {
-  const {username, name, password} = req.body
+  const {username, name, password, userId} = req.body
 
   if(!validate.username(username)) {
     return res.status(400).json(
@@ -31,7 +33,8 @@ userRouter.post("/", async (req, res) => {
   const user = new User({
     username: username,
     name: name,
-    passwordHash: passwordHash
+    passwordHash: passwordHash,
+    user: userId ? userId : "TO BE IMPLEMENTED",
   })
 
   const savedUser = await user.save()
