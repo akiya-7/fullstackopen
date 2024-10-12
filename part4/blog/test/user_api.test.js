@@ -5,7 +5,6 @@ const supertest = require('supertest')
 const app = require('../app')
 const User = require('../models/user')
 const Blog = require('../models/blog')
-const lists = require('../utils/example_lists')
 const {importUserList, importBlogList2, blogToPost} = require('../utils/example_lists');
 
 const api = supertest(app)
@@ -14,14 +13,14 @@ beforeEach(async () => {
   // Set Users
   await User.deleteMany()
 
-  const userObjects = lists.importUserList.map(user => new User(user))
+  const userObjects = importUserList.map(user => new User(user))
   const userPromiseArray = userObjects.map(user => user.save())
   await Promise.all(userPromiseArray)
 
   // Set Blogs
   await Blog.deleteMany()
 
-  const blogObjects = lists.importBlogList2.map(blog => new Blog(blog))
+  const blogObjects = importBlogList2.map(blog => new Blog(blog))
   const blogPromiseArray = blogObjects.map(blog => blog.save())
   await Promise.all(blogPromiseArray)
 
@@ -76,23 +75,48 @@ describe.only("Posting users", () => {
       name: "NAME",
       password: "PASSWORD"
     }
-    const response = await api
+    await api
       .post("/api/users")
       .send(user)
       .expect(201)
+
   })
 })
 
 test.only("Blog post contains a user", async () => {
-  const testUserId = "aaaaaaaaaaaaaaaaaaaaaaaa"
+  const user = {
+    username: "USERNAME",
+    name: "NAME",
+    password: "PASSWORD",
+  }
 
-  const response = await api
+  // Create User
+  const createUser = await api
+    .post("/api/users")
+    .send(user)
+    .expect(201)
+
+  // Log In
+  const loginResponse = await api
+    .post("/api/login")
+    .send({
+      username: user.username,
+      password: user.password
+    })
+    .expect(200)
+
+  // Ensure the token is present
+  const token = loginResponse.body.token
+
+  // Post a blog with the user's token
+  const blogResponse = await api
     .post("/api/blogs")
+    .set('Authorization', `Bearer ${token}`)
     .send(blogToPost)
 
-  assert.deepStrictEqual(response.body.user, testUserId)
-})
+  assert.deepStrictEqual(createUser.body.id, blogResponse.body.user)
 
+})
 after(async () => {
   await mongoose.connection.close()
 })
