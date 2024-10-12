@@ -117,6 +117,16 @@ test.only("Blog post contains a user", async () => {
   assert.deepStrictEqual(createUser.body.id, blogResponse.body.user)
 
 })
+test.only("Send blog without correct token", async () => {
+  const blogResponse = await api
+    .post("/api/blogs")
+    .set('Authorization', `Bearer invalidtoken`)
+    .send(blogToPost)
+    .expect(400)
+
+    assert.deepStrictEqual(blogResponse.body.error, 'token missing or invalid')
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
