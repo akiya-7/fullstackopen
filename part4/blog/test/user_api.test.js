@@ -105,7 +105,6 @@ test.only("Blog post contains a user", async () => {
     })
     .expect(200)
 
-  // Ensure the token is present
   const token = loginResponse.body.token
 
   // Post a blog with the user's token
@@ -125,6 +124,77 @@ test.only("Send blog with incorrect token", async () => {
     .expect(400)
 
     assert.deepStrictEqual(blogResponse.body.error, 'token missing or invalid')
+})
+
+test.only("Create and delete blog post", async () => {
+  const user = {
+    username: "USERNAME",
+    name: "NAME",
+    password: "PASSWORD",
+  }
+
+  // Create User
+  const createUser = await api
+    .post("/api/users")
+    .send(user)
+    .expect(201)
+
+  // Log In
+  const loginResponse = await api
+    .post("/api/login")
+    .send({
+      username: user.username,
+      password: user.password
+    })
+    .expect(200)
+
+  const token = loginResponse.body.token
+
+  // Post a blog with the user's token
+  const blogResponse = await api
+    .post("/api/blogs")
+    .set('Authorization', `Bearer ${token}`)
+    .send(blogToPost)
+
+  const blogId = blogResponse.body.id
+  const deleteBlog = await api
+    .delete(`/api/blogs/${blogId}`)
+    .set('Authorization', `Bearer ${token}`)
+    .expect(200)
+
+  assert.deepStrictEqual("Successfully deleted", deleteBlog.body.message)
+})
+
+test.only("Attempt to delete another users content.", async () => {
+  const notYourBlogPost = "5a422a851b54a676234d17f7"
+
+  const user = {
+    username: "USERNAME",
+    name: "NAME",
+    password: "PASSWORD",
+  }
+
+  // Create User
+  const createUser = await api
+    .post("/api/users")
+    .send(user)
+    .expect(201)
+
+  // Log In
+  const loginResponse = await api
+    .post("/api/login")
+    .send({
+      username: user.username,
+      password: user.password
+    })
+    .expect(200)
+
+  const token = loginResponse.body.token
+
+  deleteBlog = await api
+    .delete(`/api/blogs/${notYourBlogPost}`)
+    .set('Authorization', `Bearer ${token}`)
+    .expect(403)
 })
 
 after(async () => {
