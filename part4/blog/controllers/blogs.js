@@ -2,41 +2,57 @@ const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 
 blogsRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({})
+  const blogs = await Blog
+    .find({})
+    .populate("user", {username: 1, name: 1})
   response.json(blogs)
 })
 
-blogsRouter.post('/', async (request, response) => {
+blogsRouter.post('/', async (request, response, next) => {
 
-  const payload = request.body
-
-  const blog = new Blog({
-    title: payload.title,
-    author: payload.author,
-    url: payload.url,
-    likes: payload.likes ? payload.likes : 0,
-      })
+  const {title, author, url, likes} = request.body
 
   try {
+    const user = request.user
+
+    const blog = new Blog({
+    title: title,
+    author: author,
+    url: url,
+    user: user.id,
+    likes: likes ? likes : 0,
+    })
+
     const savedBlog = await blog.save()
+    user.blogs = await user.blogs.concat(savedBlog._id)
+    await user.save()
+
     response.status(201).json(savedBlog)
   }
   catch (error) {
-    response.status(400).json({error: error.message})
+    next(error)
   }
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
-  const blogId = request.params.id
-
   try {
-    const deletedBlog = await Blog.findByIdAndDelete(blogId)
-    response
-    .status(204)
-    .json({message: "Successfully deleted", blog: deletedBlog })
+    const blogId = request.params.id
+
+    const user = request.user
+    const blogToDelete = await Blog.findById(blogId)
+
+    // Check if authorized to delete blog
+
+    if (blogToDelete.user.toString() === user.id.toString()) {
+      const deletedBlog = await Blog.findByIdAndDelete(blogId)
+      response.status(200).json({message: "Successfully deleted", blog: deletedBlog })
+    }
+    else
+      return response.status(403).json({ message: "Forbidden: You are not allowed to delete this blog." })
+
   }
   catch (error) {
-    response.status(404).json({error: error.message}).end()
+    next(error)
   }
 })
 
