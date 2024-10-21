@@ -10,11 +10,9 @@ const Login = ( {onLogin} ) => {
     }
 
     const handleUsernameInput = (e) => {
-        console.log("Username:", e.target.value)
         setUsername(e.target.value)
     }
     const handlePasswordInput = (e) => {
-        console.log("Password", e.target.value)
         setPassword(e.target.value)
     }
 
@@ -26,7 +24,6 @@ const Login = ( {onLogin} ) => {
 
   return (
       <form id="login-form" onSubmit={handleSubmit}>
-        <h2>log in to application</h2>
         <p>
           username: <input id="username" type="text" value={username}
                            onChange={handleUsernameInput} required /> <br/>

@@ -2,12 +2,15 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import Login from './components/Login'
 import AddBlog from './components/AddBlog'
+import AlertMessage from './components/AlertMessage';
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
+  const [alertMessage, setAlertMessage] = useState('')
+  const [alertType, setAlertType] = useState('')
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -24,10 +27,18 @@ const App = () => {
     }
   }, [])
 
+  const displayAlert = (alertMessage, alertType) => {
+    setAlertMessage(alertMessage)
+    setAlertType(alertType)
+    setTimeout(() => {
+      setAlertMessage(null)
+    }, 5000)
+  };
+
   const handleLogin = async (loginDetails) => {
     const user = await loginService.login(loginDetails)
     if (user.error) {
-      console.log(user.error)
+      displayAlert(user.error, 'error')
       return
     }
     window.localStorage.setItem(
@@ -43,16 +54,29 @@ const App = () => {
   }
 
   if (user === null)
-    return(<Login onLogin={handleLogin}/>)
+    return(
+        <>
+          <h2>Log in to application</h2>
+          <AlertMessage type={alertType} message={alertMessage}/>
+          <Login onLogin={handleLogin}/>
+        </>)
 
   const handleNewBlog = async (newBlog) => {
-    const response = await blogService.postBlog(newBlog, { headers: { Authorization: `Bearer ${user}`}})
-    blogService.getAll().then(blogs => setBlogs( blogs ))
+    try {
+      const response = await blogService.postBlog(newBlog,
+          {headers: {Authorization: `Bearer ${user}`}})
+      displayAlert(`A new blog ${response.title} added!`, "success")
+    } catch (error) {
+      displayAlert(error, 'error')
+    } finally {
+      blogService.getAll().then(blogs => setBlogs(blogs))
+    }
   }
 
   return (
       <div>
         <h2>blogs</h2>
+        <AlertMessage type={alertType} message={alertMessage}/>
         <p>
           Hello {user.name}! <button id="logout" onClick={() => {handleLogout()}}>Logout</button>
         </p>
