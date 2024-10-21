@@ -5,6 +5,7 @@ import AddBlog from './components/AddBlog'
 import AlertMessage from './components/AlertMessage';
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Toggleable from './components/Toggleable.jsx';
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -81,11 +82,16 @@ const App = () => {
           Hello {user.name}! <button id="logout" onClick={() => {handleLogout()}}>Logout</button>
         </p>
 
-        <AddBlog onNewBlog={handleNewBlog}/>
+        <Toggleable buttonLabel="New Blog">
+          <AddBlog onNewBlog={handleNewBlog}/>
+        </Toggleable>
 
-        {blogs.map(blog =>
+        <div id="blog-list">
+          {blogs.map(blog =>
             <Blog key={blog.id} blog={blog}/>
         )}
+        </div>
+
       </div>
   )
 }
