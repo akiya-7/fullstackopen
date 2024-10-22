@@ -1,9 +1,9 @@
 import axios from 'axios'
-const baseUrl = '/api'
+const baseUrl = '/api/login'
 
 const login = async (loginDetails) => {
   try {
-    const tokenRequest = await axios.post(`${baseUrl}/login`, loginDetails)
+    const tokenRequest = await axios.post(`${baseUrl}`, loginDetails)
     return tokenRequest.data
 
     }
