@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import {useState, useEffect, useRef} from 'react';
 import Blog from './components/Blog'
 import Login from './components/Login'
 import AddBlog from './components/AddBlog'
@@ -27,6 +27,8 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, [])
+
+  const addBlogRef = useRef()
 
   const displayAlert = (alertMessage, alertType) => {
     setAlertMessage(alertMessage)
@@ -67,11 +69,25 @@ const App = () => {
       const response = await blogService.postBlog(newBlog,
           {headers: {Authorization: `Bearer ${user}`}})
       displayAlert(`A new blog ${response.title} added!`, "success")
+       blogService.getAll().then(blogs => setBlogs(blogs))
     } catch (error) {
-      displayAlert(error, 'error')
+      if (error.response.data.error === "token has expired") {
+        displayAlert("Session expired! Please log-in again.", 'error')
+        handleLogout()
+      }
+      else
+        console.log(error)
     } finally {
-      blogService.getAll().then(blogs => setBlogs(blogs))
+      addBlogRef.current.toggle()
     }
+  }
+
+  const handleBlogLike = async (blogToUpdate) => {
+    console.log(blogToUpdate);
+    const response = await blogService.likeBlog(blogToUpdate)
+    blogService.getAll().then(blogs => setBlogs(blogs))
+
+    console.log(response);
   }
 
   return (
@@ -82,13 +98,13 @@ const App = () => {
           Hello {user.name}! <button id="logout" onClick={() => {handleLogout()}}>Logout</button>
         </p>
 
-        <Toggleable buttonLabel="New Blog">
+        <Toggleable buttonLabel="New Blog" ref={addBlogRef}>
           <AddBlog onNewBlog={handleNewBlog}/>
         </Toggleable>
 
         <div id="blog-list">
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog}/>
+            <Blog key={blog.id} blog={blog} onLikeBlog={handleBlogLike}/>
         )}
         </div>
 

@@ -1,6 +1,6 @@
 import {useState} from 'react';
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, refs, onLikeBlog }) => {
   const [detailVisibility, setDetailVisibility] = useState(false)
 
   const blogStyle = {
@@ -20,6 +20,16 @@ const Blog = ({ blog }) => {
 
 
   const likeBlog = () => {
+    const likedBlog = {
+      id: blog.id,
+      data: {
+        user: blog.user.id,
+        title: blog.title,
+        author: blog.author,
+        url: blog.url,
+        likes: (blog.likes + 1)}
+    }
+    onLikeBlog(likedBlog)
   }
 
   return (

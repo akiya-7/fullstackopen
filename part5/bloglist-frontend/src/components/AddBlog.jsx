@@ -5,9 +5,16 @@ const AddBlog = ({onNewBlog}) => {
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
+  const clearFields = () => {
+    setTitle('')
+    setAuthor('')
+    setUrl('')
+  }
+
   const handleSubmit = (e) => {
-        e.preventDefault()
-        onNewBlog( {title: title, author: author, url: url} )
+    e.preventDefault()
+    onNewBlog( {title: title, author: author, url: url} )
+    clearFields()
     }
 
   return(

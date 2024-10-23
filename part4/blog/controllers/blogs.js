@@ -59,12 +59,11 @@ blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) =
 
 blogsRouter.put('/:id', async (request, response) => {
   const blogId = request.params.id
-  const changes = request.body
+  const changes = request.body.data
 
   const updatedBlog = await
       Blog.findByIdAndUpdate(blogId, changes, { new: true })
-
-  response.json(updatedBlog)
+  response.json({message: "Successfully Updated", blog: updatedBlog})
 })
 
 module.exports = blogsRouter
