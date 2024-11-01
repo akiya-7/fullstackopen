@@ -13,9 +13,13 @@ const App = () => {
   const [alertMessage, setAlertMessage] = useState('')
   const [alertType, setAlertType] = useState('')
 
-  useEffect(() => {
+  const loadBlogs = () => {
     blogService.getAll().then(blogs =>
-      setBlogs(blogs ))
+      setBlogs( blogs ))
+  }
+
+  useEffect(() => {
+    loadBlogs()
   }, [])
 
   useEffect(() => {
@@ -68,7 +72,7 @@ const App = () => {
       const response = await blogService.postBlog(newBlog,
           {headers: {Authorization: `Bearer ${user}`}})
       displayAlert(`A new blog ${response.title} added!`, "success")
-       blogService.getAll().then(blogs => setBlogs(blogs))
+      loadBlogs()
     } catch (error) {
       if (error.response.data.error === "token has expired") {
         displayAlert("Session expired! Please log-in again.", 'error')
@@ -84,12 +88,24 @@ const App = () => {
   const handleBlogLike = async (blogToUpdate) => {
     console.log(blogToUpdate);
     const response = await blogService.likeBlog(blogToUpdate)
-    blogService.getAll().then(blogs => setBlogs(blogs))
-
+    loadBlogs()
     console.log(response);
   }
 
-  console.log(blogs)
+  const handleBlogDelete = async (blogToDelete) => {
+    console.log("Button pressed")
+    const confirmMessage = `Remove blog: ${blogToDelete.title} by ${blogToDelete.author}`
+    if (confirm(confirmMessage)) {
+      try {
+        await blogService.deleteBlog(blogToDelete)
+        displayAlert(`${blogToDelete.title} has now been deleted.`, "success")
+      } catch (error) {
+        displayAlert(error.response.data.message, 'error')
+      } finally {
+        loadBlogs()
+      }
+    }
+  }
 
   return <div>
     <h2>blogs</h2>
@@ -106,8 +122,9 @@ const App = () => {
       {blogs
       .sort((a,b) => b.likes - a.likes)
       .map(blog =>
-        <Blog key={blog.id} blog={blog} onLikeBlog={handleBlogLike}/>
-    )}
+        <Blog key={blog.id} blog={blog} user={user}
+              onLikeBlog={handleBlogLike} onDeleteBlog={handleBlogDelete}/>
+      )}
     </div>
 
   </div>

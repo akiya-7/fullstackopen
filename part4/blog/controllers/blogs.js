@@ -35,21 +35,23 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response, next) 
   }
 })
 
-blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) => {
+blogsRouter.delete('/:id', middleware.userExtractor, async (request, response, next) => {
   try {
     const blogId = request.params.id
 
     const user = request.user
     const blogToDelete = await Blog.findById(blogId)
 
-    // Check if authorized to delete blog
-
-    if (blogToDelete.user.toString() === user.id.toString()) {
-      const deletedBlog = await Blog.findByIdAndDelete(blogId)
-      response.status(200).json({message: "Successfully deleted", blog: deletedBlog })
+    if (!blogToDelete) {
+      return response.status(404).json({message: "Blog does not exist."})
     }
-    else
-      return response.status(403).json({ message: "Forbidden: You are not allowed to delete this blog." })
+
+    if (blogToDelete.user.toString() !== user.id.toString()){
+      return response.status(403).json({message: 'Forbidden: You are not allowed to delete this blog.'});
+    }
+
+    const deletedBlog = await Blog.findByIdAndDelete(blogId)
+    return response.status(200).json({message: 'Successfully deleted', blog: deletedBlog})
 
   }
   catch (error) {
