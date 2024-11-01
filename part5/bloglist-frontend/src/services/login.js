@@ -6,10 +6,10 @@ const login = async (loginDetails) => {
     const tokenRequest = await axios.post(`${baseUrl}`, loginDetails)
     return tokenRequest.data
 
-    }
-    catch (error) {
-      return error.response.data
-    }
+  }
+  catch (error) {
+    return error.response.data
+  }
 }
 
 export default { login }

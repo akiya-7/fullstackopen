@@ -1,6 +1,6 @@
-import {useState} from 'react';
+import { useState } from 'react'
 
-const Blog = ({ blog, user, refs, onLikeBlog, onDeleteBlog}) => {
+const Blog = ({ blog, user, refs, onLikeBlog, onDeleteBlog }) => {
   const [detailVisibility, setDetailVisibility] = useState(false)
 
   const blogStyle = {
@@ -9,10 +9,10 @@ const Blog = ({ blog, user, refs, onLikeBlog, onDeleteBlog}) => {
     paddingLeft: 2,
     border: 'solid',
     borderWidth: 1,
-    marginBottom: 5}
+    marginBottom: 5 }
 
-  const fullDetails = {display: detailVisibility ? "block" : "none"}
-  const noDetails = {display: detailVisibility ? "none" : "block"}
+  const fullDetails = { display: detailVisibility ? 'block' : 'none' }
+  const noDetails = { display: detailVisibility ? 'none' : 'block' }
 
   const toggleDetailVisibility = () => {
     setDetailVisibility(!detailVisibility)
@@ -26,7 +26,7 @@ const Blog = ({ blog, user, refs, onLikeBlog, onDeleteBlog}) => {
         title: blog.title,
         author: blog.author,
         url: blog.url,
-        likes: (blog.likes + 1)}
+        likes: (blog.likes + 1) }
     }
     onLikeBlog(likedBlog)
   }
@@ -36,29 +36,29 @@ const Blog = ({ blog, user, refs, onLikeBlog, onDeleteBlog}) => {
   }
 
   return (
-        <div style={blogStyle}>
-          <div style={noDetails}>
-            {blog.title} {blog.author}
-            <button onClick={toggleDetailVisibility}>view</button>
-          </div>
+    <div style={blogStyle}>
+      <div style={noDetails}>
+        {blog.title} {blog.author}
+        <button onClick={toggleDetailVisibility}>view</button>
+      </div>
 
-          <div style={fullDetails}>
-            {blog.title} {blog.author}
-            <button onClick={toggleDetailVisibility}>hide</button>
-            <br/>
-            {blog.url}
-            <br/>
+      <div style={fullDetails}>
+        {blog.title} {blog.author}
+        <button onClick={toggleDetailVisibility}>hide</button>
+        <br/>
+        {blog.url}
+        <br/>
             Likes: {blog.likes}
-            <button onClick={likeBlog}>like</button>
-            <br/>
+        <button onClick={likeBlog}>like</button>
+        <br/>
             User: {blog.user.name}
-            <br/>
-            {blog.user.name === user.name ?
-                <button onClick={deleteBlog}>delete</button> : null
-            }
-          </div>
-        </div>
-    )
+        <br/>
+        {blog.user.name === user.name ?
+          <button onClick={deleteBlog}>delete</button> : null
+        }
+      </div>
+    </div>
+  )
 }
 
 export default Blog
