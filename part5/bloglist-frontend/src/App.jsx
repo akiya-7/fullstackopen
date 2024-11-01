@@ -15,8 +15,7 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
+      setBlogs(blogs ))
   }, [])
 
   useEffect(() => {
@@ -90,26 +89,28 @@ const App = () => {
     console.log(response);
   }
 
-  return (
-      <div>
-        <h2>blogs</h2>
-        <AlertMessage type={alertType} message={alertMessage}/>
-        <p>
-          Hello {user.name}! <button id="logout" onClick={() => {handleLogout()}}>Logout</button>
-        </p>
+  console.log(blogs)
 
-        <Toggleable buttonLabel="New Blog" ref={addBlogRef}>
-          <AddBlog onNewBlog={handleNewBlog}/>
-        </Toggleable>
+  return <div>
+    <h2>blogs</h2>
+    <AlertMessage type={alertType} message={alertMessage}/>
+    <p>
+      Hello {user.name}! <button id="logout" onClick={() => {handleLogout()}}>Logout</button>
+    </p>
 
-        <div id="blog-list">
-          {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} onLikeBlog={handleBlogLike}/>
-        )}
-        </div>
+    <Toggleable buttonLabel="New Blog" ref={addBlogRef}>
+      <AddBlog onNewBlog={handleNewBlog}/>
+    </Toggleable>
 
-      </div>
-  )
+    <div id="blog-list">
+      {blogs
+      .sort((a,b) => b.likes - a.likes)
+      .map(blog =>
+        <Blog key={blog.id} blog={blog} onLikeBlog={handleBlogLike}/>
+    )}
+    </div>
+
+  </div>
 }
 
 export default App
