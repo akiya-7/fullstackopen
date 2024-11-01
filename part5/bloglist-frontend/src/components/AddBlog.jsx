@@ -1,24 +1,31 @@
-import {useState} from 'react';
+import { useState } from 'react'
 
-const AddBlog = ({onNewBlog}) => {
+const AddBlog = ({ onNewBlog }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
+  const clearFields = () => {
+    setTitle('')
+    setAuthor('')
+    setUrl('')
+  }
+
   const handleSubmit = (e) => {
-        e.preventDefault()
-        onNewBlog( {title: title, author: author, url: url} )
-    }
+    e.preventDefault()
+    onNewBlog( { title: title, author: author, url: url } )
+    clearFields()
+  }
 
   return(
-      <form onSubmit={handleSubmit}>
-        <p>
+    <form onSubmit={handleSubmit}>
+      <p>
           Title: <input id="title" value={title} onChange={(e) => setTitle(e.target.value)}/> <br/>
           Author: <input id="author" value={author} onChange={(e) => setAuthor(e.target.value)}/> <br/>
           URL: <input id="url" value={url} onChange={(e) => setUrl(e.target.value)}/> <br/>
-          <button type='submit'>Create</button>
-        </p>
-      </form>
+        <button type='submit'>Create</button>
+      </p>
+    </form>
 
   )
 }
