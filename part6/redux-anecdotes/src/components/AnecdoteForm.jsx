@@ -1,9 +1,9 @@
 import {newAnecdote} from '../reducers/anecdoteReducer.js';
 import {useDispatch} from 'react-redux';
 
-const dispatch = useDispatch();
-
 const AnecdoteForm = () => {
+
+  const dispatch = useDispatch();
 
   const handleNewAnecdote = (event) => {
     event.preventDefault()
