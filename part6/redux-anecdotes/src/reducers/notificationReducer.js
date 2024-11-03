@@ -14,7 +14,7 @@ const notificationSlice = createSlice({
       state.visible = true
     },
     newAnecdoteNotification(state, action) {
-      state.message = `'${action.payload.content}' has been added`
+      state.message = `'${action.payload}' has been added`
       state.visible = true
     },
     clearNotification(state){
