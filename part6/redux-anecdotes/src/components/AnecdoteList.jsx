@@ -24,7 +24,7 @@ const AnecdoteList = () => {
           <div>
             has {anecdote.votes}
             <button onClick={() => {
-              dispatch(vote(anecdote.id))
+              dispatch(vote(anecdote))
               dispatch(voteNotification(anecdote.content))
               setTimeout(() => dispatch(clearNotification()), 5000)}
             }>vote</button>
