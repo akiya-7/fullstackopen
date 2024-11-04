@@ -1,5 +1,11 @@
 import { useState } from 'react'
-import {BrowserRouter as Router, Link, Route, Routes} from 'react-router-dom';
+import {
+  Link,
+  Route,
+  Routes,
+  useMatch,
+} from 'react-router-dom';
+import Anecdote from '../src/components/Anecdote.jsx'
 
 const Menu = () => {
   const padding = {
@@ -18,7 +24,9 @@ const AnecdoteList = ({ anecdotes }) => (
   <div>
     <h2>Anecdotes</h2>
     <ul>
-      {anecdotes.map(anecdote => <li key={anecdote.id} >{anecdote.content}</li>)}
+      {anecdotes.map(anecdote => <li key={anecdote.id} >
+        <Link to={`/anecdotes/${anecdote.id}`}>{anecdote.content}</Link>
+      </li>)}
     </ul>
   </div>
 )
@@ -104,13 +112,16 @@ const App = () => {
 
   const [notification, setNotification] = useState('')
 
+  const anecdoteById = (id) =>
+    anecdotes.find(a => a.id === id)
+
+  const match = useMatch('/anecdotes/:id')
+  const anecdoteMatch = match ? anecdoteById(Number(match.params.id)) : null
+
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000)
     setAnecdotes(anecdotes.concat(anecdote))
   }
-
-  const anecdoteById = (id) =>
-    anecdotes.find(a => a.id === id)
 
   const vote = (id) => {
     const anecdote = anecdoteById(id)
@@ -124,7 +135,6 @@ const App = () => {
   }
 
   return (
-      <Router>
         <div>
           <h1>Software anecdotes</h1>
           <Menu/>
@@ -132,10 +142,10 @@ const App = () => {
             <Route path='/' element={<AnecdoteList anecdotes={anecdotes}/>} />
             <Route path='/create' element={<CreateNew addNew={addNew} />} />
             <Route path='/about' element={<About/>}/>
+            <Route path='/anecdotes/:id' element={<Anecdote anecdote={anecdoteMatch} />}/>
           </Routes>
           <Footer/>
         </div>
-      </Router>
   );
 }
 
