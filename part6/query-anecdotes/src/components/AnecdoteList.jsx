@@ -1,15 +1,14 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {updateAnecdote} from '../requests.js';
 
-const AnecdoteList = () => {
+const AnecdoteList = (data) => {
   const queryClient = useQueryClient();
-  const anecdotes = queryClient.getQueryData(['anecdotes'])
 
   const votedAnecdoteMutation = useMutation({
     mutationFn: updateAnecdote,
     onSuccess: (votedAnecdote) => {
-      const anecdotes = queryClient.getQueryData(['anecdotes'])
-      queryClient.setQueriesData(['anecdotes'], anecdotes.map(anecdote =>
+      const anecdoteList = queryClient.getQueryData(['anecdotes'])
+      queryClient.setQueryData(['anecdotes'], anecdoteList.map(anecdote =>
       anecdote.id !== votedAnecdote.id ? anecdote : votedAnecdote))
     }
   })
@@ -21,7 +20,7 @@ const AnecdoteList = () => {
 
   return(
       <div>
-        {anecdotes.map(anecdote =>
+        {data.anecdotes.map(anecdote =>
             <div key={anecdote.id}>
               <div>
             {anecdote.content}

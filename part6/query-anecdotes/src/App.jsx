@@ -25,7 +25,7 @@ const App = () => {
 
       <Notification />
       <AnecdoteForm />
-      <AnecdoteList />
+      <AnecdoteList anecdotes={result.data} />
     </div>
   )
 }

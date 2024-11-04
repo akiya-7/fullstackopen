@@ -3,9 +3,13 @@ import {newAnecdote} from '../requests.js';
 
 const AnecdoteForm = () => {
   const queryClient = useQueryClient();
-  const newAnecdoteMutation = useMutation(
-      { mutationFn: newAnecdote,
-      onSuccess: () => {queryClient.invalidateQueries({queryKey: ['anecdotes']})}})
+  const newAnecdoteMutation = useMutation({
+    mutationFn: newAnecdote,
+    onSuccess: (newAnecdote) => {
+      const anecdoteList = queryClient.getQueryData(['anecdotes'])
+      queryClient.setQueryData(['anecdotes'], anecdoteList.concat(newAnecdote))
+    }
+  })
 
   const onCreate = (event) => {
     event.preventDefault()
