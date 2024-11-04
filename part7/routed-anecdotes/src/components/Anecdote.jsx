@@ -1,5 +1,4 @@
-const Anecdote = (anecdote) => {
-  anecdote = anecdote.anecdote
+const Anecdote = ({anecdote}) => {
   return(
       <div>
         <h2>{anecdote.content} by {anecdote.author}</h2>

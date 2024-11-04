@@ -6,6 +6,7 @@ import {
   useMatch,
 } from 'react-router-dom';
 import Anecdote from '../src/components/Anecdote.jsx'
+import Notification from './components/Notification.jsx';
 
 const Menu = () => {
   const padding = {
@@ -118,9 +119,15 @@ const App = () => {
   const match = useMatch('/anecdotes/:id')
   const anecdoteMatch = match ? anecdoteById(Number(match.params.id)) : null
 
+  const displayNotification = (message) => {
+      setNotification(message)
+      setTimeout(() => {setNotification("")}, 5000)
+    }
+
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000)
     setAnecdotes(anecdotes.concat(anecdote))
+    displayNotification(`a new anecdote ${anecdote.content} created!`)
   }
 
   const vote = (id) => {
@@ -138,6 +145,7 @@ const App = () => {
         <div>
           <h1>Software anecdotes</h1>
           <Menu/>
+          <Notification message={notification}/>
           <Routes>
             <Route path='/' element={<AnecdoteList anecdotes={anecdotes}/>} />
             <Route path='/create' element={<CreateNew addNew={addNew} />} />
