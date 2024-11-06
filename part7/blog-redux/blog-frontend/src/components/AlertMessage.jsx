@@ -1,41 +1,37 @@
-const AlertMessage = ({ message, type }) => {
-  const successStyle = {
-    color: "green",
-    background: "lightgrey",
-    fontSize: 20,
-    borderStyle: "solid",
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
-  };
-  const errorStyle = {
-    color: "red",
-    background: "lightgrey",
-    fontSize: 20,
-    borderStyle: "solid",
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
-  };
-  const defaultStyle = {};
+import { useSelector } from "react-redux";
 
-  if (message === null || type === null) {
+const AlertMessage = () => {
+  const styleMap = {
+    success: {
+      color: "green",
+      background: "lightgrey",
+      fontSize: 20,
+      borderStyle: "solid",
+      borderRadius: 5,
+      padding: 10,
+      marginBottom: 10,
+    },
+    error: {
+      color: "red",
+      background: "lightgrey",
+      fontSize: 20,
+      borderStyle: "solid",
+      borderRadius: 5,
+      padding: 10,
+      marginBottom: 10,
+    },
+    default: {},
+  };
+
+  const alert = useSelector((state) => state.alert);
+
+  if (alert.message === null || alert.type === null) {
     return null;
   }
 
-  switch (type) {
-    case "success":
-      type = successStyle;
-      break;
-    case "error":
-      type = errorStyle;
-      break;
-    default:
-      type = defaultStyle;
-      break;
-  }
+  const alertStyle = styleMap[alert.type] || styleMap.default;
 
-  return <div style={type}>{message}</div>;
+  return <div style={alertStyle}>{alert.message}</div>;
 };
 
 export default AlertMessage;
