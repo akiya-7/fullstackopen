@@ -1,22 +1,22 @@
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import Blog from "./components/Blog";
+import BlogList from "./components/BlogList.jsx";
 import Login from "./components/Login";
 import AddBlog from "./components/AddBlog";
 import AlertMessage from "./components/AlertMessage";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import { displayAlert } from "./reducers/alertReducer.js";
+import { initialiseBlogs } from "./reducers/blogReducer.js";
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, []);
+    dispatch(initialiseBlogs());
+  }, [dispatch]);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedUser");
@@ -62,7 +62,7 @@ const App = () => {
     } catch (error) {
       dispatch(displayAlert(error.response.data.error, "error"));
     } finally {
-      blogService.getAll().then((blogs) => setBlogs(blogs));
+      dispatch(initialiseBlogs());
     }
   };
 
@@ -83,10 +83,7 @@ const App = () => {
       </p>
 
       <AddBlog onNewBlog={handleNewBlog} />
-
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
-      ))}
+      <BlogList />
     </div>
   );
 };
