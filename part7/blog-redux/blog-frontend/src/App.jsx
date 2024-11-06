@@ -7,19 +7,25 @@ import AlertMessage from "./components/AlertMessage";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import { displayAlert } from "./reducers/alertReducer.js";
-import { initialiseBlogs } from "./reducers/blogReducer.js";
-import Blog from "./components/Blog.jsx";
+import { newBlog } from "./reducers/blogReducer.js";
 import Toggleable from "./components/Toggleable.jsx";
 
 const App = () => {
+  const [user, setUser] = useState(null);
+
   const dispatch = useDispatch();
   const addBlogRef = useRef();
 
   useEffect(() => {
-    dispatch(initialiseBlogs());
-  }, [dispatch]);
+    const loggedUserJSON = window.localStorage.getItem("loggedUser");
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON);
+      setUser(user);
+      blogService.setToken(user.token);
+    }
+  }, []);
 
-  /* const handleLogin = async (loginDetails) => {
+  const handleLogin = async (loginDetails) => {
     const user = await loginService.login(loginDetails);
     if (user.error) {
       dispatch(displayAlert(user.error, "error"));
@@ -28,33 +34,31 @@ const App = () => {
     window.localStorage.setItem("loggedUser", JSON.stringify(user));
     setUser(user);
     blogService.setToken(user.token);
-  };*/
+  };
 
   const handleLogout = () => {
     setUser(null);
     window.localStorage.removeItem("loggedUser");
-    dispatch(displayAlert(`Successfully logged out.`, "success"));
   };
 
-  /*if (user === null)
+  if (user === null)
     return (
       <>
         <h2>Log in to application</h2>
         <AlertMessage />
         <Login onLogin={handleLogin} />
       </>
-    );*/
+    );
 
-  const handleNewBlog = async (newBlog) => {
+  const handleNewBlog = async (blog) => {
     try {
-      const response = await blogService.postBlog(newBlog, {
-        headers: { Authorization: `Bearer ${user}` },
-      });
-      dispatch(displayAlert(`A new blog ${response.title} added!`, "success"));
+      dispatch(newBlog(blog, user));
     } catch (error) {
-      dispatch(displayAlert(error.response.data.error, "error"));
-    } finally {
-      dispatch(initialiseBlogs());
+      console.log(error);
+      dispatch(displayAlert(error.response, "error"));
+      if (error.response.data.error === "token has expired") {
+        handleLogout();
+      }
     }
   };
 
@@ -63,7 +67,7 @@ const App = () => {
       <h2>blogs</h2>
       <AlertMessage />
       <p>
-        Hello {/*user.name*/}!{" "}
+        Hello {user.name}!
         <button
           id="logout"
           onClick={() => {
@@ -78,7 +82,7 @@ const App = () => {
         <AddBlog onNewBlog={handleNewBlog} />
       </Toggleable>
 
-      <BlogList />
+      <BlogList user={user} />
     </div>
   );
 };

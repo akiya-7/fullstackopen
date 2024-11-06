@@ -1,20 +1,15 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { initialiseBlogs } from "../reducers/blogReducer.js";
 import Blog from "./Blog.jsx";
-import blogService from "../services/blogs.js";
-import { useEffect, useState } from "react";
 
-const BlogList = () => {
+const BlogList = ({ user }) => {
+  const dispatch = useDispatch();
   const blogs = useSelector((state) => state.blog);
-  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("loggedUser");
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      blogService.setToken(user.token);
-    }
-  }, []);
+    dispatch(initialiseBlogs());
+  }, [dispatch]);
 
   if (!blogs) {
     return <div>Loading...</div>;
@@ -24,9 +19,11 @@ const BlogList = () => {
 
   return (
     <div id="blog-list">
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} user={user} />
-      ))}
+      {[...blogs]
+        .sort((a, b) => b.likes - a.likes)
+        .map((blog) => (
+          <Blog key={blog.id} blog={blog} user={user} />
+        ))}
     </div>
   );
 };

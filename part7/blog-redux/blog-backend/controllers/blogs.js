@@ -7,6 +7,19 @@ blogsRouter.get("/", async (request, response) => {
   response.json(blogs);
 });
 
+blogsRouter.get("/:id", async (request, response, next) => {
+  try {
+    const id = request.params.id;
+    const blog = await Blog.findById(id).populate("user", {
+      username: 1,
+      name: 1,
+    });
+    response.json(blog);
+  } catch (e) {
+    next(e);
+  }
+});
+
 blogsRouter.post(
   "/",
   middleware.userExtractor,
@@ -53,11 +66,9 @@ blogsRouter.delete(
           .status(200)
           .json({ message: "Successfully deleted", blog: deletedBlog });
       } else
-        return response
-          .status(403)
-          .json({
-            message: "Forbidden: You are not allowed to delete this blog.",
-          });
+        return response.status(403).json({
+          message: "Forbidden: You are not allowed to delete this blog.",
+        });
     } catch (error) {
       next(error);
     }
