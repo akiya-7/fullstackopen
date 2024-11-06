@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import Login from './components/Login'
 import AddBlog from './components/AddBlog'
-import AlertMessage from './components/AlertMessage';
+import AlertMessage from './components/AlertMessage'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Toggleable from './components/Toggleable.jsx'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -12,10 +13,13 @@ const App = () => {
   const [alertMessage, setAlertMessage] = useState('')
   const [alertType, setAlertType] = useState('')
 
-  useEffect(() => {
+  const loadBlogs = () => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
+      setBlogs( blogs ))
+  }
+
+  useEffect(() => {
+    loadBlogs()
   }, [])
 
   useEffect(() => {
@@ -27,13 +31,15 @@ const App = () => {
     }
   }, [])
 
+  const addBlogRef = useRef()
+
   const displayAlert = (alertMessage, alertType) => {
     setAlertMessage(alertMessage)
     setAlertType(alertType)
     setTimeout(() => {
       setAlertMessage(null)
     }, 5000)
-  };
+  }
 
   const handleLogin = async (loginDetails) => {
     const user = await loginService.login(loginDetails)
@@ -42,8 +48,8 @@ const App = () => {
       return
     }
     window.localStorage.setItem(
-        'loggedUser', JSON.stringify(user)
-      )
+      'loggedUser', JSON.stringify(user)
+    )
     setUser(user)
     blogService.setToken(user.token)
   }
@@ -55,39 +61,73 @@ const App = () => {
 
   if (user === null)
     return(
-        <>
-          <h2>Log in to application</h2>
-          <AlertMessage type={alertType} message={alertMessage}/>
-          <Login onLogin={handleLogin}/>
-        </>)
+      <>
+        <h2>Log in to application</h2>
+        <AlertMessage type={alertType} message={alertMessage}/>
+        <Login onLogin={handleLogin}/>
+      </>)
 
   const handleNewBlog = async (newBlog) => {
     try {
       const response = await blogService.postBlog(newBlog,
-          {headers: {Authorization: `Bearer ${user}`}})
-      displayAlert(`A new blog ${response.title} added!`, "success")
+        { headers: { Authorization: `Bearer ${user}` } })
+      displayAlert(`A new blog ${response.title} added!`, 'success')
+      loadBlogs()
     } catch (error) {
-      displayAlert(error, 'error')
+      if (error.response.data.error === 'token has expired') {
+        displayAlert('Session expired! Please log-in again.', 'error')
+        handleLogout()
+      }
+      else
+        console.log(error)
     } finally {
-      blogService.getAll().then(blogs => setBlogs(blogs))
+      addBlogRef.current.toggle()
     }
   }
 
-  return (
-      <div>
-        <h2>blogs</h2>
-        <AlertMessage type={alertType} message={alertMessage}/>
-        <p>
-          Hello {user.name}! <button id="logout" onClick={() => {handleLogout()}}>Logout</button>
-        </p>
+  const handleBlogLike = async (blogToUpdate) => {
+    console.log(blogToUpdate)
+    const response = await blogService.likeBlog(blogToUpdate)
+    loadBlogs()
+    console.log(response)
+  }
 
-        <AddBlog onNewBlog={handleNewBlog}/>
+  const handleBlogDelete = async (blogToDelete) => {
+    console.log('Button pressed')
+    const confirmMessage = `Remove blog: ${blogToDelete.title} by ${blogToDelete.author}`
+    if (confirm(confirmMessage)) {
+      try {
+        await blogService.deleteBlog(blogToDelete)
+        displayAlert(`${blogToDelete.title} has now been deleted.`, 'success')
+      } catch (error) {
+        displayAlert(error.response.data.message, 'error')
+      } finally {
+        loadBlogs()
+      }
+    }
+  }
 
-        {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog}/>
+  return <div>
+    <h2>blogs</h2>
+    <AlertMessage type={alertType} message={alertMessage}/>
+    <p>
+      Hello {user.name}! <button id="logout" onClick={() => {handleLogout()}}>Logout</button>
+    </p>
+
+    <Toggleable buttonLabel="New Blog" ref={addBlogRef}>
+      <AddBlog onNewBlog={handleNewBlog}/>
+    </Toggleable>
+
+    <div id="blog-list">
+      {blogs
+        .sort((a,b) => b.likes - a.likes)
+        .map(blog =>
+          <Blog key={blog.id} blog={blog} user={user}
+            onLikeBlog={handleBlogLike} onDeleteBlog={handleBlogDelete}/>
         )}
-      </div>
-  )
+    </div>
+
+  </div>
 }
 
 export default App
