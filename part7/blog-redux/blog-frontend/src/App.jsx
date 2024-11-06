@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import BlogList from "./components/BlogList.jsx";
 import Login from "./components/Login";
@@ -8,26 +8,18 @@ import blogService from "./services/blogs";
 import loginService from "./services/login";
 import { displayAlert } from "./reducers/alertReducer.js";
 import { initialiseBlogs } from "./reducers/blogReducer.js";
+import Blog from "./components/Blog.jsx";
+import Toggleable from "./components/Toggleable.jsx";
 
 const App = () => {
-  const [user, setUser] = useState(null);
-
   const dispatch = useDispatch();
+  const addBlogRef = useRef();
 
   useEffect(() => {
     dispatch(initialiseBlogs());
   }, [dispatch]);
 
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("loggedUser");
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      blogService.setToken(user.token);
-    }
-  }, []);
-
-  const handleLogin = async (loginDetails) => {
+  /* const handleLogin = async (loginDetails) => {
     const user = await loginService.login(loginDetails);
     if (user.error) {
       dispatch(displayAlert(user.error, "error"));
@@ -36,7 +28,7 @@ const App = () => {
     window.localStorage.setItem("loggedUser", JSON.stringify(user));
     setUser(user);
     blogService.setToken(user.token);
-  };
+  };*/
 
   const handleLogout = () => {
     setUser(null);
@@ -44,14 +36,14 @@ const App = () => {
     dispatch(displayAlert(`Successfully logged out.`, "success"));
   };
 
-  if (user === null)
+  /*if (user === null)
     return (
       <>
         <h2>Log in to application</h2>
         <AlertMessage />
         <Login onLogin={handleLogin} />
       </>
-    );
+    );*/
 
   const handleNewBlog = async (newBlog) => {
     try {
@@ -71,7 +63,7 @@ const App = () => {
       <h2>blogs</h2>
       <AlertMessage />
       <p>
-        Hello {user.name}!{" "}
+        Hello {/*user.name*/}!{" "}
         <button
           id="logout"
           onClick={() => {
@@ -82,7 +74,10 @@ const App = () => {
         </button>
       </p>
 
-      <AddBlog onNewBlog={handleNewBlog} />
+      <Toggleable buttonLabel="New Blog" ref={addBlogRef}>
+        <AddBlog onNewBlog={handleNewBlog} />
+      </Toggleable>
+
       <BlogList />
     </div>
   );
