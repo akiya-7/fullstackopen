@@ -1,52 +1,26 @@
-import { useState, useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import BlogList from "./components/BlogList.jsx";
 import Login from "./components/Login";
 import AddBlog from "./components/AddBlog";
 import AlertMessage from "./components/AlertMessage";
-import blogService from "./services/blogs";
-import loginService from "./services/login";
+import Toggleable from "./components/Toggleable.jsx";
 import { displayAlert } from "./reducers/alertReducer.js";
 import { newBlog } from "./reducers/blogReducer.js";
-import Toggleable from "./components/Toggleable.jsx";
+import { userLogout } from "./reducers/userReducer.js";
 
 const App = () => {
-  const [user, setUser] = useState(null);
+  const user = useSelector((state) => state.user);
 
   const dispatch = useDispatch();
   const addBlogRef = useRef();
 
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("loggedUser");
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      blogService.setToken(user.token);
-    }
-  }, []);
-
-  const handleLogin = async (loginDetails) => {
-    const user = await loginService.login(loginDetails);
-    if (user.error) {
-      dispatch(displayAlert(user.error, "error"));
-      return;
-    }
-    window.localStorage.setItem("loggedUser", JSON.stringify(user));
-    setUser(user);
-    blogService.setToken(user.token);
-  };
-
-  const handleLogout = () => {
-    setUser(null);
-    window.localStorage.removeItem("loggedUser");
-  };
-
-  if (user === null)
+  if (!user)
     return (
       <>
         <h2>Log in to application</h2>
         <AlertMessage />
-        <Login onLogin={handleLogin} />
+        <Login />
       </>
     );
 
@@ -57,7 +31,7 @@ const App = () => {
       console.log(error);
       dispatch(displayAlert(error.response, "error"));
       if (error.response.data.error === "token has expired") {
-        handleLogout();
+        dispatch(userLogout());
       }
     }
   };
@@ -71,7 +45,7 @@ const App = () => {
         <button
           id="logout"
           onClick={() => {
-            handleLogout();
+            dispatch(userLogout());
           }}
         >
           Logout

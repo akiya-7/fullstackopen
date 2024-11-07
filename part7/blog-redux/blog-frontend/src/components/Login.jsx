@@ -1,6 +1,10 @@
 import { useState } from "react";
+import { userLogin } from "../reducers/userReducer.js";
+import { useDispatch } from "react-redux";
 
-const Login = ({ onLogin }) => {
+const Login = ({}) => {
+  const dispatch = useDispatch();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -18,7 +22,7 @@ const Login = ({ onLogin }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onLogin({ username: username, password: password });
+    dispatch(userLogin({ username: username, password: password }));
     clearFields();
   };
 
