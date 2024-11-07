@@ -1,21 +1,15 @@
-import { useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import BlogList from "./components/BlogList.jsx";
+import { useSelector } from "react-redux";
 import Login from "./components/Login";
-import AddBlog from "./components/AddBlog";
 import AlertMessage from "./components/AlertMessage";
-import Toggleable from "./components/Toggleable.jsx";
-import { displayAlert } from "./reducers/alertReducer.js";
-import { newBlog } from "./reducers/blogReducer.js";
-import { userLogout } from "./reducers/userReducer.js";
+import Users from "./views/Users.jsx";
+import { Route, Routes } from "react-router-dom";
+import Blogs from "./views/Blogs.jsx";
+import UserGreeting from "./components/UserGreeting.jsx";
 
 const App = () => {
-  const user = useSelector((state) => state.user);
+  const currentUser = useSelector((state) => state.currentUser);
 
-  const dispatch = useDispatch();
-  const addBlogRef = useRef();
-
-  if (!user)
+  if (!currentUser)
     return (
       <>
         <h2>Log in to application</h2>
@@ -24,40 +18,17 @@ const App = () => {
       </>
     );
 
-  const handleNewBlog = async (blog) => {
-    try {
-      dispatch(newBlog(blog, user));
-    } catch (error) {
-      console.log(error);
-      dispatch(displayAlert(error.response, "error"));
-      if (error.response.data.error === "token has expired") {
-        dispatch(userLogout());
-      }
-    }
-  };
-
   return (
-    <div>
+    <>
       <h2>blogs</h2>
+      <UserGreeting {...currentUser} />
       <AlertMessage />
-      <p>
-        Hello {user.name}!
-        <button
-          id="logout"
-          onClick={() => {
-            dispatch(userLogout());
-          }}
-        >
-          Logout
-        </button>
-      </p>
 
-      <Toggleable buttonLabel="New Blog" ref={addBlogRef}>
-        <AddBlog onNewBlog={handleNewBlog} />
-      </Toggleable>
-
-      <BlogList user={user} />
-    </div>
+      <Routes>
+        <Route path="/" element={<Blogs currentUser />} />
+        <Route path="/users" element={<Users />} />
+      </Routes>
+    </>
   );
 };
 
