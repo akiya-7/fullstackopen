@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { deleteBlog, likeBlog } from "../reducers/blogReducer.js";
 
-const Blog = ({ blog, user, refs }) => {
+const Blog = ({ blog }) => {
   const [detailVisibility, setDetailVisibility] = useState(false);
+  const currentUser = useSelector((state) => state.currentUser.user);
   const dispatch = useDispatch();
 
   const blogStyle = {
@@ -45,7 +46,7 @@ const Blog = ({ blog, user, refs }) => {
         <br />
         User: {blog.user.name}
         <br />
-        {blog.user.name === user.name ? (
+        {blog.user.name === currentUser.name ? (
           <button onClick={() => handleDelete(blog)}>delete</button>
         ) : null}
       </div>

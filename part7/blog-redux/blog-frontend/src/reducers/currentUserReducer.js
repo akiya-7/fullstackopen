@@ -3,18 +3,22 @@ import { displayAlert } from "./alertReducer.js";
 import loginService from "../services/login.js";
 import blogService from "../services/blogs.js";
 
-const initialState =
-  JSON.parse(window.localStorage.getItem("loggedUser")) || null;
+const initialState = {
+  user: JSON.parse(window.localStorage.getItem("loggedUser")) || null,
+  cached: !!JSON.parse(window.localStorage.getItem("loggedUser")),
+};
 
 const currentUserSlice = createSlice({
   name: "login",
-  initialState,
+  initialState: initialState,
   reducers: {
     setUser: (state, action) => {
-      return action.payload;
+      state.user = action.payload;
+      state.cached = true;
     },
-    clearUser: () => {
-      return null;
+    clearUser: (state) => {
+      state.user = null;
+      state.cached = null;
     },
   },
 });
@@ -39,6 +43,15 @@ export const userLogout = () => {
     dispatch(clearUser());
     window.localStorage.removeItem("loggedUser");
     blogService.setToken(null);
+  };
+};
+
+export const userAuthentication = () => {
+  return async (dispatch) => {
+    if (initialState.cached) {
+      dispatch(setUser(initialState.user));
+      await blogService.setToken(initialState.user.token);
+    }
   };
 };
 

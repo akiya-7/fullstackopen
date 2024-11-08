@@ -33,12 +33,10 @@ export const initialiseBlogs = () => {
   };
 };
 
-export const newBlog = (blog, user) => {
+export const newBlog = (blog) => {
   return async (dispatch) => {
     try {
-      const res = await blogService.newBlog(blog, {
-        headers: { Authorization: `Bearer ${user}` },
-      });
+      const res = await blogService.newBlog(blog);
       const newBlog = await blogService.getBlog(res.id);
       dispatch(addBlog(newBlog));
       dispatch(displayAlert(`A new blog ${res.title} added!`, "success"));
@@ -57,12 +55,12 @@ export const likeBlog = (blog) => {
   };
 };
 
-export const deleteBlog = (blog, token) => {
+export const deleteBlog = (blog) => {
   return async (dispatch) => {
     try {
-      await blogService.deleteBlog(blog, token);
+      await blogService.deleteBlog(blog);
       dispatch(removeBlog(blog.id));
-      dispatch(displayAlert(`Blog ${blog.title} deleted...`, "success"));
+      dispatch(displayAlert(`Blog '${blog.title}' deleted...`, "success"));
     } catch (error) {
       console.log(error);
     }

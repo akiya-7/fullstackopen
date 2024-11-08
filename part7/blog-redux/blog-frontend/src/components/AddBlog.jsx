@@ -1,13 +1,29 @@
 import { useState } from "react";
+import { newBlog } from "../reducers/blogReducer.js";
+import { displayAlert } from "../reducers/alertReducer.js";
+import { userLogout } from "../reducers/currentUserReducer.js";
+import { useDispatch, useSelector } from "react-redux";
 
-const AddBlog = ({ onNewBlog }) => {
+const AddBlog = () => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
 
+  const currentUser = useSelector((state) => state.currentUser.user);
+  const dispatch = useDispatch();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    onNewBlog({ title: title, author: author, url: url });
+    const blog = { title: title, author: author, url: url };
+    try {
+      dispatch(newBlog(blog, currentUser));
+    } catch (error) {
+      console.log(error);
+      dispatch(displayAlert(error.response, "error"));
+      if (error.response.data.error === "token has expired") {
+        dispatch(userLogout());
+      }
+    }
   };
 
   return (
