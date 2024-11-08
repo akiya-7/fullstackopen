@@ -3,7 +3,7 @@ import AddBlog from "../components/AddBlog.jsx";
 import BlogList from "../components/BlogList.jsx";
 import { useRef } from "react";
 
-const Blogs = () => {
+const Blogs = (blogs) => {
   const addBlogRef = useRef();
 
   return (
@@ -12,7 +12,7 @@ const Blogs = () => {
         <AddBlog />
       </Toggleable>
 
-      <BlogList />
+      <BlogList blogs={blogs} />
     </div>
   );
 };

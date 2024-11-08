@@ -1,27 +1,40 @@
 import { createSlice } from "@reduxjs/toolkit";
 import blogService from "../services/blogs.js";
 import { displayAlert } from "./alertReducer.js";
+import { userLogout } from "./currentUserReducer.js";
 
-const initialState = [];
+const initialState = {
+  blogList: null,
+  isInitialised: false,
+  matchedBlog: null,
+};
 
 const blogSlice = createSlice({
   name: "blog",
   initialState: initialState,
   reducers: {
     setBlogs(state, action) {
-      return action.payload;
+      state.blogList = action.payload;
+      state.isInitialised = true;
     },
     updateBlog(state, action) {
       const updatedBlog = action.payload;
-      return state.map((blog) =>
+      const blogList = state.blogList.map((blog) =>
         blog.id !== updatedBlog.id ? blog : updatedBlog,
       );
+      const matchedBlog = blogList.find((blog) => blog.id === updatedBlog.id);
+
+      state.blogList = blogList;
+      state.matchedBlog = matchedBlog;
     },
     removeBlog(state, action) {
-      return state.filter((blog) => blog.id !== action.payload);
+      state.blogList.filter((blog) => blog.id !== action.payload);
     },
     addBlog(state, action) {
-      state.push(action.payload);
+      state.blogList.push(action.payload);
+    },
+    setMatchBlog(state, action) {
+      state.matchedBlog = action.payload;
     },
   },
 });
@@ -42,6 +55,10 @@ export const newBlog = (blog) => {
       dispatch(displayAlert(`A new blog ${res.title} added!`, "success"));
     } catch (e) {
       console.log(e);
+      dispatch(userLogout());
+      dispatch(
+        displayAlert(`Session has expired! Please log in again.`, "error"),
+      );
     }
   };
 };
@@ -67,6 +84,19 @@ export const deleteBlog = (blog) => {
   };
 };
 
-export const { setBlogs, addBlog, updateBlog, removeBlog } = blogSlice.actions;
+export const matchBlog = (id) => {
+  return async (dispatch) => {
+    if (id === null) {
+      dispatch(setMatchBlog(null));
+      return;
+    }
+
+    const blog = await blogService.getBlog(id);
+    dispatch(setMatchBlog(blog));
+  };
+};
+
+export const { setBlogs, addBlog, updateBlog, removeBlog, setMatchBlog } =
+  blogSlice.actions;
 
 export default blogSlice.reducer;
