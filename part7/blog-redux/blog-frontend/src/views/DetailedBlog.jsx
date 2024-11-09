@@ -25,8 +25,6 @@ const DetailedBlog = () => {
     if (confirm(confirmMessage)) dispatch(deleteBlog(blog));
   };
 
-  console.log(blog.comments);
-
   return (
     <div style={styles.blogStyle}>
       <div>
@@ -44,7 +42,7 @@ const DetailedBlog = () => {
       </div>
       <div>
         <h3>Comments</h3>
-        <AddComment />
+        <AddComment blog={blog} />
         {blog.comments.length !== 0 ? (
           <ul>
             {blog.comments.map((comment) => {

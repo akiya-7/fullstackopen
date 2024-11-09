@@ -9,11 +9,13 @@ const NavBar = () => {
 
   return (
     <div key={"nav-bar"} style={style}>
-      <Link to={"/"}>Blogs</Link>
-      <Link to={"/users"} style={{ padding: 20 }}>
+      <Link to={"/"} style={{ padding: 10 }}>
+        Blogs
+      </Link>
+      <Link to={"/users"} style={{ padding: 10, paddingRight: 20 }}>
         Users
       </Link>
-      <UserGreeting style={{ paddingLeft: 20 }} />
+      <UserGreeting />
     </div>
   );
 };

@@ -27,7 +27,12 @@ const newBlog = (blog) => {
 };
 
 const likeBlog = async (blog) => {
-  const likedBlog = { ...blog, user: blog.user.id, likes: blog.likes + 1 };
+  const likedBlog = {
+    ...blog,
+    user: blog.user.id,
+    likes: blog.likes + 1,
+    comments: blog.comments.map((comment) => comment.id),
+  };
   const response = await axios.put(`${baseUrl}/${blog.id}`, likedBlog);
   return response.data;
 };
@@ -40,4 +45,31 @@ const deleteBlog = (blog) => {
   return request.then((response) => response.data);
 };
 
-export default { getAll, getBlog, newBlog, likeBlog, setToken, deleteBlog };
+const addComment = async (content, blog, user) => {
+  const config = {
+    headers: { Authorization: token },
+  };
+
+  const comment = {
+    content: content,
+    blog: blog.id,
+    user: user.id,
+  };
+
+  const request = await axios.post(
+    `${baseUrl}/${blog.id}/comment`,
+    comment,
+    config,
+  );
+  return request.data;
+};
+
+export default {
+  getAll,
+  getBlog,
+  newBlog,
+  likeBlog,
+  setToken,
+  deleteBlog,
+  addComment,
+};
