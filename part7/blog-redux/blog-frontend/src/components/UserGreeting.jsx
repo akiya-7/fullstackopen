@@ -6,7 +6,7 @@ const UserGreeting = () => {
   const name = useSelector((state) => state.currentUser.user.name);
 
   return (
-    <p>
+    <>
       Hello {name}!
       <button
         id="logout"
@@ -16,7 +16,7 @@ const UserGreeting = () => {
       >
         Logout
       </button>
-    </p>
+    </>
   );
 };
 

@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Route, Routes, useMatch } from "react-router-dom";
+import NavBar from "./components/NavBar";
 import Login from "./components/Login";
 import AlertMessage from "./components/AlertMessage";
 import UserGreeting from "./components/UserGreeting.jsx";
@@ -46,25 +47,15 @@ const App = () => {
 
   return (
     <>
+      <NavBar />
       <h2>blogs</h2>
-      <UserGreeting />
       <AlertMessage />
 
       <Routes>
         <Route path="/" element={<Blogs />} />
         <Route path="/users" element={<Users />} />
-        <Route
-          path="/blogs/:id"
-          element={
-            blog ? <DetailedBlog blog={blog} /> : <div>Blog not found!</div>
-          }
-        />
-        <Route
-          path="/users/:id"
-          element={
-            user ? <DetailedUser users={user} /> : <div>Blog Not Found</div>
-          }
-        />
+        <Route path="/blogs/:id" element={<DetailedBlog />} />
+        <Route path="/users/:id" element={<DetailedUser />} />
       </Routes>
     </>
   );
