@@ -10,7 +10,7 @@ import DetailedUser from "./views/DetailedUser.jsx";
 import { useEffect } from "react";
 import { userAuthentication } from "./reducers/currentUserReducer.js";
 import { initialiseBlogs, matchBlog } from "./reducers/blogReducer.js";
-import { initialiseUsers } from "./reducers/userReducer.js";
+import { initialiseUsers, matchUser } from "./reducers/userReducer.js";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -22,8 +22,6 @@ const App = () => {
   const userMatch = useMatch("/users/:id");
 
   const currentUser = useSelector((state) => state.currentUser.user);
-  const blogList = useSelector((state) => state.blog.blogList);
-  const userList = useSelector((state) => state.user.userList);
 
   useEffect(() => {
     dispatch(userAuthentication());
@@ -35,9 +33,7 @@ const App = () => {
 
   const blog = blogMatch ? dispatch(matchBlog(blogMatch.params.id)) : null;
 
-  const user = userMatch
-    ? userList.find((user) => user.id === userMatch.params.id)
-    : null;
+  const user = userMatch ? dispatch(matchUser(userMatch.params.id)) : null;
 
   if (!currentUser)
     return (
@@ -55,7 +51,7 @@ const App = () => {
       <AlertMessage />
 
       <Routes>
-        <Route path="/" element={<Blogs blogs={blogList} />} />
+        <Route path="/" element={<Blogs />} />
         <Route path="/users" element={<Users />} />
         <Route
           path="/blogs/:id"
