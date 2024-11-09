@@ -3,7 +3,6 @@ import { Route, Routes, useMatch } from "react-router-dom";
 import NavBar from "./components/NavBar";
 import Login from "./components/Login";
 import AlertMessage from "./components/AlertMessage";
-import UserGreeting from "./components/UserGreeting.jsx";
 import Users from "./views/Users.jsx";
 import Blogs from "./views/Blogs.jsx";
 import DetailedBlog from "./views/DetailedBlog.jsx";
@@ -32,9 +31,8 @@ const App = () => {
 
   if (!blogsInitialised || !usersInitialised) return <div>Loading...</div>;
 
-  const blog = blogMatch ? dispatch(matchBlog(blogMatch.params.id)) : null;
-
-  const user = userMatch ? dispatch(matchUser(userMatch.params.id)) : null;
+  blogMatch ? dispatch(matchBlog(blogMatch.params.id)) : null;
+  userMatch ? dispatch(matchUser(userMatch.params.id)) : null;
 
   if (!currentUser)
     return (

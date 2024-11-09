@@ -12,6 +12,12 @@ const userSchema = new mongoose.Schema({
       ref: "Blog",
     },
   ],
+  comments: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Comment",
+    },
+  ],
 });
 
 userSchema.set("toJSON", {
@@ -20,6 +26,7 @@ userSchema.set("toJSON", {
     delete returnedObject._id;
     delete returnedObject.__v;
     delete returnedObject.passwordHash;
+    delete returnedObject.comments;
   },
 });
 
