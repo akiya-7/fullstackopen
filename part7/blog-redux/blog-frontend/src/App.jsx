@@ -1,8 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Route, Routes, useMatch } from "react-router-dom";
 import NavBar from "./components/NavBar";
-import Login from "./components/Login";
 import AlertMessage from "./components/AlertMessage";
+import Login from "./views/Login.jsx";
 import Users from "./views/Users.jsx";
 import Blogs from "./views/Blogs.jsx";
 import DetailedBlog from "./views/DetailedBlog.jsx";
@@ -22,6 +22,7 @@ const App = () => {
   const userMatch = useMatch("/users/:id");
 
   const currentUser = useSelector((state) => state.currentUser.user);
+  const hasAlert = useSelector((state) => state.alert.message);
 
   useEffect(() => {
     dispatch(userAuthentication());
@@ -36,18 +37,17 @@ const App = () => {
 
   if (!currentUser)
     return (
-      <>
+      <div className={"container align-content-center"}>
         <h2>Log in to application</h2>
         <AlertMessage />
         <Login />
-      </>
+      </div>
     );
 
   return (
-    <>
+    <div className={"container"}>
       <NavBar />
-      <h2>blogs</h2>
-      <AlertMessage />
+      {hasAlert ? <AlertMessage /> : null}
 
       <Routes>
         <Route path="/" element={<Blogs />} />
@@ -55,7 +55,7 @@ const App = () => {
         <Route path="/blogs/:id" element={<DetailedBlog />} />
         <Route path="/users/:id" element={<DetailedUser />} />
       </Routes>
-    </>
+    </div>
   );
 };
 

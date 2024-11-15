@@ -1,22 +1,55 @@
 import { Link } from "react-router-dom";
-import UserGreeting from "./UserGreeting.jsx";
+import { Button, Nav, Navbar, NavItem } from "react-bootstrap";
+import { userLogout } from "../reducers/currentUserReducer.js";
+import { useDispatch, useSelector } from "react-redux";
 
 const NavBar = () => {
-  const style = {
-    padding: 10,
-    background: "#b4b4b4",
-  };
+  const dispatch = useDispatch();
+  const name = useSelector((state) => state.currentUser.user.name);
 
   return (
-    <div key={"nav-bar"} style={style}>
-      <Link to={"/"} style={{ padding: 10 }}>
-        Blogs
-      </Link>
-      <Link to={"/users"} style={{ padding: 10, paddingRight: 20 }}>
-        Users
-      </Link>
-      <UserGreeting />
-    </div>
+    <Navbar collapseOnSelect className={"bg-body-tertiary"} expand="lg">
+      <Navbar.Brand>Blogs</Navbar.Brand>
+      <Nav>
+        <NavItem className={"d-lg-none"}>
+          <Navbar.Text>Hello {name}!</Navbar.Text>
+          <Button
+            variant="link"
+            onClick={() => {
+              dispatch(userLogout());
+            }}
+          >
+            Logout
+          </Button>
+        </NavItem>
+      </Nav>
+      <Navbar.Toggle aria-controls={"responsive-navbar-nav"} />
+      <Navbar.Collapse id="responsive-navbar-nav">
+        <Nav className="me-auto" variant={"underline"} defaultActiveKey={"/"}>
+          <Nav.Item>
+            <Nav.Link as={Link} to={"/"}>
+              Blogs
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link as={Link} to={"/users"}>
+              Users
+            </Nav.Link>
+          </Nav.Item>
+        </Nav>
+        <NavItem className={"d-none d-lg-block"}>
+          <Navbar.Text>Hello {name}!</Navbar.Text>
+          <Button
+            variant="link"
+            onClick={() => {
+              dispatch(userLogout());
+            }}
+          >
+            Logout
+          </Button>
+        </NavItem>
+      </Navbar.Collapse>
+    </Navbar>
   );
 };
 

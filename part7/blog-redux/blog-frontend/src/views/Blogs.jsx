@@ -1,6 +1,7 @@
 import Toggleable from "../components/Toggleable.jsx";
 import AddBlog from "../components/AddBlog.jsx";
 import BlogList from "../components/BlogList.jsx";
+import BlogPodium from "../components/BlogPodium.jsx";
 import { useRef } from "react";
 
 const Blogs = (blogs) => {
@@ -12,6 +13,7 @@ const Blogs = (blogs) => {
         <AddBlog />
       </Toggleable>
 
+      <BlogPodium />
       <BlogList blogs={blogs} />
     </div>
   );

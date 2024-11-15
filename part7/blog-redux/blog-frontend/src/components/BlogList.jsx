@@ -1,19 +1,21 @@
 import { useSelector } from "react-redux";
 import BlogInList from "./BlogInList.jsx";
+import { Table } from "react-bootstrap";
 
 const BlogList = () => {
   const blogs = useSelector((state) => state.blog.blogList);
 
-  if (!blogs) return <div>Loading...</div>;
+  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes); // Sort blogs by likes in descending order
+  const remainingBlogs = sortedBlogs.slice(3); // Get the remaining blogs after the first three
 
   return (
-    <div id="blog-list">
-      {[...blogs]
-        .sort((a, b) => b.likes - a.likes)
-        .map((blog) => (
-          <BlogInList key={blog.id} blog={blog} />
+    <Table striped hover responsive>
+      <tbody key={"blog-list"}>
+        {remainingBlogs.map((blog) => (
+          <BlogInList blog={blog} />
         ))}
-    </div>
+      </tbody>
+    </Table>
   );
 };
 
