@@ -1,14 +1,15 @@
-import {ALL_AUTHORS} from '../queries.js';
-import {useQuery} from '@apollo/client'
+import { ALL_AUTHORS } from "../queries.js";
+import { useQuery } from "@apollo/client";
+import UpdateAuthor from "./UpdateAuthor";
 
 const Authors = (props) => {
-  const result = useQuery(ALL_AUTHORS)
+  const result = useQuery(ALL_AUTHORS);
 
   if (!props.show || result.loading) {
-    return null
+    return null;
   }
 
-  const authors = result.data.allAuthors
+  const authors = result.data.allAuthors;
 
   return (
     <div>
@@ -29,8 +30,9 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
+      <UpdateAuthor />
     </div>
-  )
-}
+  );
+};
 
-export default Authors
+export default Authors;

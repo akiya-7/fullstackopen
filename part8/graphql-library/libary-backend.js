@@ -177,12 +177,15 @@ const resolvers = {
         return null;
       }
 
-      let editedAuthor;
+      let editedAuthor = { ...authorToEdit };
 
       if (args.setBornTo) {
-        editedAuthor = { ...authorToEdit, born: args.setBornTo };
+        editedAuthor.born = args.setBornTo;
       }
 
+      authors = authors.map((author) =>
+        author.name === editedAuthor.name ? editedAuthor : author,
+      );
       return editedAuthor;
     },
   },
