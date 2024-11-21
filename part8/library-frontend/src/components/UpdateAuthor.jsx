@@ -1,10 +1,13 @@
-import { ALL_AUTHORS, EDIT_AUTHOR } from "../queries.js";
-import { useMutation } from "@apollo/client";
+import { All_AUTHOR_NAMES, ALL_AUTHORS, EDIT_AUTHOR } from "../queries.js";
+import { useMutation, useQuery } from "@apollo/client";
 
 const UpdateAuthor = () => {
+  const authorNames = useQuery(All_AUTHOR_NAMES);
   const [updateAuthor] = useMutation(EDIT_AUTHOR, {
     refetchQueries: [{ query: ALL_AUTHORS }],
   });
+
+  console.log(authorNames);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -19,7 +22,16 @@ const UpdateAuthor = () => {
     <div id={"update-author"}>
       <h3>update author</h3>
       <form onSubmit={handleUpdate}>
-        name <input type={"text"} name={"name"} />
+        <label>name </label>
+        <select name={"name"}>
+          {authorNames.data.allAuthors.map((name) => {
+            return (
+              <option key={name} value={name.name}>
+                {name.name}
+              </option>
+            );
+          })}
+        </select>
         <br />
         born <input type={"number"} name={"born"} />
         <br />

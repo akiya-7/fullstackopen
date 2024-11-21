@@ -10,6 +10,14 @@ export const ALL_AUTHORS = gql`
   }
 `;
 
+export const All_AUTHOR_NAMES = gql`
+  query {
+    allAuthors {
+      name
+    }
+  }
+`;
+
 export const ALL_BOOKS = gql`
   query {
     allBooks {
