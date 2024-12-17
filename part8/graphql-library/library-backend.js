@@ -3,11 +3,13 @@ const { GraphQLError } = require("graphql");
 const { ApolloServer } = require("@apollo/server");
 const { startStandaloneServer } = require("@apollo/server/standalone");
 require("dotenv").config();
+const jwt = require("jsonwebtoken");
 
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 const Author = require("./models/Author");
 const Book = require("./models/Book");
+const User = require("./models/User");
 
 const MONGO_URI = process.env.MONGO_URI;
 
@@ -106,7 +108,28 @@ const typeDefs = `
     authorCount: Int!
     allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
+    me: User
   },
+  type Mutation {
+    addBook(
+      title: String!,
+      author: String!,
+      published: Int!, 
+      genres: [String!]!
+      ): Book!
+    editAuthor(
+      name: String!,
+      setBornTo: Int
+      ): Author!
+    createUser(
+      username: String!
+      favouriteGenre: String!
+    ): User
+    login(
+      username: String!
+      password: String!
+    ): Token
+  }
   type Book {
     title: String!
     author: Author!
@@ -119,17 +142,13 @@ const typeDefs = `
     born: Int
     bookCount: Int!
   }
-  type Mutation {
-    addBook(
-      title: String!,
-      author: String!,
-      published: Int!, 
-      genres: [String!]!
-      ): Book!
-    editAuthor(
-      name: String!,
-      setBornTo: Int
-      ): Author!
+  type User {
+    username: String!
+    favouriteGenre: String!
+    id: ID!
+  }
+  type Token {
+    value: String!
   }
 `;
 
@@ -169,9 +188,19 @@ const resolvers = {
     allAuthors: async () => {
       return Author.find({});
     },
+    me: async (root, args, contextValue) => {
+      return contextValue.currentUser;
+    },
   },
   Mutation: {
-    addBook: async (root, args) => {
+    addBook: async (root, args, contextValue) => {
+      if (!contextValue.currentUser) {
+        throw new GraphQLError(
+          "You do not have permission to add book. Please log in.",
+          { extensions: { code: "UNAUTHORIZED_ACCESS" } },
+        );
+      }
+
       let existingAuthor = await Author.findOne({ name: args.author });
 
       if (!existingAuthor) {
@@ -209,6 +238,13 @@ const resolvers = {
       return newBook;
     },
     editAuthor: async (root, args) => {
+      if (!contextValue.currentUser) {
+        throw new GraphQLError(
+          "You do not have permission to edit author information. Please log in.",
+          { extensions: { code: "UNAUTHORIZED_ACCESS" } },
+        );
+      }
+
       const authorToEdit = await Author.findOne({ name: args.name });
 
       if (!authorToEdit) {
@@ -224,6 +260,35 @@ const resolvers = {
       }
 
       return Author.findById(authorToEdit._id);
+    },
+    createUser: async (root, args) => {
+      const user = new User({
+        username: args.username,
+        favouriteGenre: args.favouriteGenre ? args.favouriteGenre : null,
+      });
+
+      return user.save().catch((err) => {
+        throw new GraphQLError("Failed to create a user", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args.username,
+            err,
+          },
+        });
+      });
+    },
+    login: async (root, args) => {
+      const user = await User.findOne({ username: args.username });
+
+      if (!user || args.password !== "password") {
+        throw new GraphQLError("Failed to login", {
+          extensions: { code: "BAD_USER_INPUT" },
+        });
+      }
+
+      const tokenContents = { username: user.username, id: user._id };
+
+      return { value: jwt.sign(tokenContents, process.env.JWT_SECRET) };
     },
   },
   Author: {
@@ -241,6 +306,16 @@ const server = new ApolloServer({
 });
 
 startStandaloneServer(server, {
+  context: async ({ req, res }) => {
+    const auth = req ? req.headers.authorization : null;
+    if (auth && auth.startsWith("Bearer ")) {
+      const decodedToken = jwt.verify(
+        auth.substring(7).trim(),
+        process.env.JWT_SECRET,
+      );
+      return { currentUser: await User.findById(decodedToken.id) };
+    }
+  },
   listen: { port: 4000 },
 }).then(({ url }) => {
   console.log(`Server ready at ${url}`);
