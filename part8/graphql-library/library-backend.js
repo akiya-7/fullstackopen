@@ -1,6 +1,7 @@
+const { GraphQLError } = require("graphql");
+
 const { ApolloServer } = require("@apollo/server");
 const { startStandaloneServer } = require("@apollo/server/standalone");
-const { v1: uuid } = require("uuid");
 require("dotenv").config();
 
 const mongoose = require("mongoose");
@@ -146,20 +147,27 @@ const resolvers = {
       let filter = {};
 
       if (args.author) {
-        const author = await Author.findOne({'name': args.author})
+        const author = await Author.findOne({ name: args.author });
         if (author) {
-          filter.author = author._id;
+          filter.author = author;
+        } else {
+          throw new GraphQLError(
+            `Author "${args.author}" does not exist in the library`,
+            {
+              extensions: { code: "NO_AUTHOR", invalidArgs: args.author },
+            },
+          );
         }
       }
 
       if (args.genre) {
-        filter.genres = {$in: [args.genre]};
+        filter.genres = { $in: [args.genre] };
       }
 
-      return await Book.find(filter).populate('author');
+      return Book.find(filter).populate("author");
     },
     allAuthors: async () => {
-      return await Author.find({});
+      return Author.find({});
     },
   },
   Mutation: {
@@ -170,9 +178,18 @@ const resolvers = {
         existingAuthor = new Author({
           name: args.author,
           born: null,
-          id: uuid(),
         });
-        await existingAuthor.save();
+        try {
+          await existingAuthor.save();
+        } catch (error) {
+          throw new GraphQLError("Failed to save new author", {
+            extensions: {
+              code: "BAD_USER_INPUT",
+              invalidArgs: args.author,
+              error,
+            },
+          });
+        }
       }
 
       const newBook = new Book({
@@ -182,18 +199,28 @@ const resolvers = {
         genres: args.genres,
       });
 
-      await newBook.save();
+      try {
+        await newBook.save();
+      } catch (error) {
+        throw new GraphQLError("Failed to save new book", {
+          extensions: { code: "BAD_USER_INPUT", error },
+        });
+      }
       return newBook;
     },
     editAuthor: async (root, args) => {
-      const authorToEdit = await Author.findOne({'name': args.name})
+      const authorToEdit = await Author.findOne({ name: args.name });
 
       if (!authorToEdit) {
-        return null;
+        throw new GraphQLError(`The author ${args.name} does not exist`, {
+          extensions: { code: "BAD_USER_INPUT", invalidArgs: args.name },
+        });
       }
 
       if (args.setBornTo) {
-        await Author.findByIdAndUpdate(authorToEdit._id, {'born': args.setBornTo});
+        await Author.findByIdAndUpdate(authorToEdit._id, {
+          born: args.setBornTo,
+        });
       }
 
       return Author.findById(authorToEdit._id);
@@ -201,8 +228,8 @@ const resolvers = {
   },
   Author: {
     bookCount: async (root) => {
-      const author = await Author.find({'name': root.name});
-      const books = await Book.find({'author': author});
+      const author = await Author.find({ name: root.name });
+      const books = await Book.find({ author: author });
       return books.length;
     },
   },
