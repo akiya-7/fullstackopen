@@ -237,7 +237,7 @@ const resolvers = {
       }
       return newBook;
     },
-    editAuthor: async (root, args) => {
+    editAuthor: async (root, args, contextValue) => {
       if (!contextValue.currentUser) {
         throw new GraphQLError(
           "You do not have permission to edit author information. Please log in.",

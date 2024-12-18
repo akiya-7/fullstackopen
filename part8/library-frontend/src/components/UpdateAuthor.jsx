@@ -7,8 +7,6 @@ const UpdateAuthor = () => {
     refetchQueries: [{ query: ALL_AUTHORS }],
   });
 
-  console.log(authorNames);
-
   const handleUpdate = async (e) => {
     e.preventDefault();
     const name = e.target.name.value;
@@ -26,7 +24,7 @@ const UpdateAuthor = () => {
         <select name={"name"}>
           {authorNames.data.allAuthors.map((name) => {
             return (
-              <option key={name} value={name.name}>
+              <option key={name.name} value={name.name}>
                 {name.name}
               </option>
             );
