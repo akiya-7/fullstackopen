@@ -31,7 +31,7 @@ const UpdateAuthor = () => {
           })}
         </select>
         <br />
-        born <input type={"number"} name={"born"} />
+        <label>born</label> <input type={"number"} name={"born"} />
         <br />
         <button type={"submit"}>update author</button>
       </form>

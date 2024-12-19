@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { ADD_BOOK, ALL_AUTHORS, ALL_BOOKS } from "../queries.js";
+import {
+  ADD_BOOK,
+  ALL_AUTHORS,
+  BOOK_GENRES,
+  SEARCH_BY_GENRE,
+} from "../queries.js";
 import { useMutation } from "@apollo/client";
 
 const NewBook = (props) => {
@@ -10,7 +15,11 @@ const NewBook = (props) => {
   const [genres, setGenres] = useState([]);
 
   const [createPerson] = useMutation(ADD_BOOK, {
-    refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
+    refetchQueries: [
+      { query: SEARCH_BY_GENRE, variables: { genre: null } },
+      { query: ALL_AUTHORS },
+      { query: BOOK_GENRES },
+    ],
   });
 
   if (!props.show) {
