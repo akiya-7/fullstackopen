@@ -21,7 +21,7 @@ const validateInput = (args: string[]): bodyInfo => {
         return {height, weight};
 };
 
-const calculateBmi = (height: number, weight: number) => {
+export const calculateBmi = (height: number, weight: number): string => {
     const bmi: number = weight / ((height/100) ** 2);
 
     if (bmi < 18.5) {
@@ -33,6 +33,8 @@ const calculateBmi = (height: number, weight: number) => {
     } else if (bmi >= 30) {
         return "Obese"
     }
+
+    return "ERROR: Could not calculate bmi";
 }
 
 const main = (args: string[]): number => {
@@ -41,4 +43,6 @@ const main = (args: string[]): number => {
     return 1;
 }
 
-main(process.argv)
+if(require.main === module) {
+    main(process.argv)
+}
