@@ -9,9 +9,9 @@ app.set("query parser", (str: string) => qs.parse(str));
 
 app.get("/hello", (_req, res) => {
     res.status(200)
-        .send("Hello World!")
-        .end()
-})
+        .send("Hello World!");
+        return;
+});
 
 app.get("/bmi", (req, res) => {
 
@@ -36,14 +36,14 @@ app.get("/bmi", (req, res) => {
         return;
     }
 
-    const bmi = calculateBmi(height, weight)
+    const bmi = calculateBmi(height, weight);
 
-    res.status(200).json({weight, height, bmi})
+    res.status(200).json({weight, height, bmi});
     return;
-})
+});
 
-const PORT = 3000;
+const PORT = 3003;
 
 app.listen(PORT, () => {
     console.log(`Listening on ${PORT}`);
-})
+});
