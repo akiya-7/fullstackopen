@@ -1,9 +1,12 @@
 import express from "express";
 import qs from "qs";
 import {calculateBmi} from "./bmiCalculator";
+import {calculateExercises} from "./exerciseCalculator";
 
 
 const app = express();
+
+app.use(express.json());
 
 app.set("query parser", (str: string) => qs.parse(str));
 
@@ -39,6 +42,40 @@ app.get("/bmi", (req, res) => {
     const bmi = calculateBmi(height, weight);
 
     res.status(200).json({weight, height, bmi});
+    return;
+});
+
+app.post("/exercises", (req, res) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const params = req.body;
+
+    console.log(params);
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (!params.daily_exercises == null || params.target == null) {
+        res.status(400).json({error: "parameters missing"});
+        return;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
+    if (!Array.isArray(params.daily_exercises) || !params.daily_exercises.every((item: unknown) => typeof item === "number")) {
+        res.status(400).json({ error: "malformatted parameters" });
+        return;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+    const daily_exercises: number[] = params.daily_exercises;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const target = Number(params.target);
+
+    if (isNaN(target)) {
+        res.status(400).json({error: "malformatted parameters"});
+        return;
+    }
+
+    res.status(200)
+        .json(calculateExercises(daily_exercises, target));
     return;
 });
 

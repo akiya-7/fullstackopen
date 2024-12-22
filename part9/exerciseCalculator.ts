@@ -12,9 +12,9 @@ interface Input {
     targetHours: number;
 }
 
-const calculateExercises = (workoutHours: number[], targetHours: number): Result => {
-    const totalHours: number = workoutHours.reduce((sum,hours) => sum += hours, 0)
-    const averageHours: number = totalHours / workoutHours.length
+export const calculateExercises = (workoutHours: number[], targetHours: number): Result => {
+    const totalHours: number = workoutHours.reduce((sum,hours) => sum += hours, 0);
+    const averageHours: number = totalHours / workoutHours.length;
 
     let rating: number;
     let ratingDescription: string = "";
@@ -40,52 +40,54 @@ const calculateExercises = (workoutHours: number[], targetHours: number): Result
         ratingDescription: ratingDescription,
         target: targetHours,
         average: averageHours
-    }
-}
+    };
+};
 
 const validateInput = (args: string[]): Input => {
     if (args.length < 4) {
-        throw new Error("Invalid input. There needs to be at least 2 numbers.")
+        throw new Error("Invalid input. There needs to be at least 2 numbers.");
     }
 
     const workoutHours: number[] = [];
 
     for (let i = 2; i < (args.length - 1); i++) {
         if (isNaN(Number(args[i]))) {
-            throw new Error("Invalid input. The workout hours must be numbers.")
+            throw new Error("Invalid input. The workout hours must be numbers.");
         }
 
         workoutHours.push(Number(args[i]));
     }
 
-    const targetHours = Number(args[(args.length - 1)])
+    const targetHours = Number(args[(args.length - 1)]);
 
     if ( isNaN(targetHours) ) {
-        throw new Error("Invalid input. The target hours must be numbers.")
+        throw new Error("Invalid input. The target hours must be numbers.");
     }
 
 
     return {
         workoutHours: workoutHours,
         targetHours: targetHours
-    }
-}
+    };
+};
 
 const main = (args: string[]): number => {
     try {
         const {targetHours, workoutHours}: Input = validateInput(args);
-        console.log(calculateExercises(workoutHours, targetHours))
+        console.log(calculateExercises(workoutHours, targetHours));
         return 0;
     }
     catch (e: unknown) {
         if (e instanceof Error) {
-            console.error("Error:", e.message)
+            console.error("Error:", e.message);
         }
         else {
-            console.error("An unknown error occurred.")
+            console.error("An unknown error occurred.");
         }
         return 1;
     }
-}
+};
 
-main(process.argv)
+if (require.main === module) {
+    main(process.argv);
+}
