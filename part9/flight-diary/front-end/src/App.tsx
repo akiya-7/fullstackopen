@@ -1,22 +1,25 @@
-import {useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {DiaryEntry} from "./types";
 import {getAllEntries} from "./services/diaryService"
-import Entry from "./components/Entry"
+import DiaryEntries from "./components/DiaryEntries"
+import NewEntry from "./components/NewEntry";
 
 function App() {
   const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>([])
 
-  useEffect(() => {
-    getAllEntries().then(res => setDiaryEntries(res))
+  const refreshEntries = useCallback(() => {
+    getAllEntries().then((res) => setDiaryEntries(res));
   }, []);
+
+  useEffect(() => {
+    refreshEntries(); // Initial fetch
+  }, [refreshEntries]);
+
 
   return (
     <div>
-      <ul>
-        {diaryEntries.length > 0 ? diaryEntries.map((entry: DiaryEntry) => {
-          return (<Entry key={entry.id} entry={entry}/>)
-        }) : null}
-      </ul>
+      <NewEntry refreshEntries={refreshEntries}/>
+      <DiaryEntries diaryEntries={diaryEntries}/>
     </div>
   )
 }
