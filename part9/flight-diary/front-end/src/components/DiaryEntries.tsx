@@ -8,6 +8,7 @@ interface DiaryEntriesProps {
 const DiaryEntries = ({diaryEntries}: DiaryEntriesProps) => {
   return (
     <div key={"diary-entries"}>
+      <h2>Diary Entries:</h2>
       <ul>
         {diaryEntries.length > 0 ? diaryEntries.map((entry: DiaryEntry) => {
           return (<Entry key={entry.id} entry={entry}/>)

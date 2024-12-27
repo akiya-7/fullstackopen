@@ -12,7 +12,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    refreshEntries(); // Initial fetch
+    refreshEntries();
   }, [refreshEntries]);
 
 

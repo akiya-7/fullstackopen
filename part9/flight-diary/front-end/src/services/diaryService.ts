@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import {DiaryEntry, NewDiaryEntry} from "../types";
 
 const url = "http://localhost:3000/api/diaries";
@@ -13,6 +13,9 @@ export const addNewEntry = async (entry: NewDiaryEntry) => {
     const newEntry = await axios.post(url, entry);
     return newEntry.data;
   } catch (error) {
+    if (error instanceof AxiosError) {
+      throw error;
+    }
     console.error(error);
   }
 
