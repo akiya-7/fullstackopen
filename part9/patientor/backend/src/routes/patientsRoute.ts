@@ -1,7 +1,8 @@
 import express, { Response } from "express";
 import patientsService from "../services/patientsService";
 import { NewPatient, NonSensitivePatient } from "../types";
-import { toNewPatient } from "../utils";
+import { zodToNewPatient } from "../utils";
+import { z } from "zod";
 
 const router = express.Router();
 
@@ -12,16 +13,16 @@ router.get("/", (_req, res: Response<NonSensitivePatient[]>) => {
 
 router.post("/", (req, res) => {
   try {
-    const validate: NewPatient = toNewPatient(req.body);
+    const validate: NewPatient = zodToNewPatient(req.body);
     const newPatient = patientsService.newPatient(validate);
 
     res.json(newPatient);
   } catch (error: unknown) {
-    let errorMessage: string = "Something went wrong.";
-    if (error instanceof Error) {
-      errorMessage += " Error: " + error.message;
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: error.issues });
+    } else {
+      res.status(400).json({ error: "An unknown error occurred." });
     }
-    res.status(400).json(errorMessage);
   }
 });
 

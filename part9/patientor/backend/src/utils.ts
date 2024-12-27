@@ -1,4 +1,5 @@
 import { NewPatient, Gender } from "./types";
+import { z } from "zod";
 
 const isString = (text: unknown): text is string => {
   return typeof text === "string" || text instanceof String;
@@ -71,4 +72,16 @@ export const toNewPatient = (object: unknown): NewPatient => {
   }
 
   throw new Error("Incorrect data: some fields are missing");
+};
+
+const newPatientSchema = z.object({
+  name: z.string(),
+  dateOfBirth: z.string().date(),
+  ssn: z.string(),
+  gender: z.nativeEnum(Gender),
+  occupation: z.string(),
+});
+
+export const zodToNewPatient = (object: unknown): NewPatient => {
+  return newPatientSchema.parse(object);
 };
