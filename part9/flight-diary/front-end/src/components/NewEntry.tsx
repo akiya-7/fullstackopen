@@ -2,10 +2,14 @@ import {FormEvent, useState} from "react";
 import {addNewEntry} from "../services/diaryService";
 import {NewDiaryEntry} from "../types";
 import Alert from "../components/Alert"
+import * as _ from "lodash";
 
 interface NewDiaryEntryProps {
   refreshEntries: () => void;
 }
+
+const weatherOptions = ["sunny", "rainy", "cloudy", "stormy", "windy"];
+const visibilityOptions = ["great", "good", "ok", "poor"]
 
 const NewEntry = ({refreshEntries}: NewDiaryEntryProps) => {
 
@@ -20,6 +24,8 @@ const NewEntry = ({refreshEntries}: NewDiaryEntryProps) => {
     setWeather("");
     setVisibility("");
     setComment("");
+
+
   };
 
   const displayAlert = (message: string) => {
@@ -33,7 +39,7 @@ const NewEntry = ({refreshEntries}: NewDiaryEntryProps) => {
     e.preventDefault();
 
       const diaryEntry: NewDiaryEntry = {
-        date, weather, visibility, comment
+        date, weather , visibility, comment
       }
 
       addNewEntry(diaryEntry).then((res: unknown) => {
@@ -54,26 +60,41 @@ const NewEntry = ({refreshEntries}: NewDiaryEntryProps) => {
         <div>
           <label>Date:</label>
           <input
-            type="text"
+            type={"date"}
             value={date}
+            name={"date"}
             onChange={(e) => setDate(e.target.value)}
           />
         </div>
         <div>
           <label>Weather:</label>
-          <input
-            type="text"
-            value={weather}
-            onChange={(e) => setWeather(e.target.value)}
-          />
+          {weatherOptions.map((option) => (
+            <label key={option}>
+              <input
+                name="weather"
+                type="radio"
+                value={option}
+                checked={weather === option}
+                onChange={() => setWeather(option)}
+              />
+              {_.capitalize(option)}
+            </label>
+          ))}
         </div>
         <div>
           <label>Visibility:</label>
-          <input
-            type="text"
-            value={visibility}
-            onChange={(e) => setVisibility(e.target.value)}
-          />
+          {visibilityOptions.map((option) => (
+            <label key={option}>
+              <input
+                name="visibility"
+                type="radio"
+                value={option}
+                checked={visibility === option}
+                onChange={() => setVisibility(option)}
+              />
+              {_.capitalize(option)}
+            </label>
+          ))}
         </div>
         <div>
           <label>Comment:</label>
