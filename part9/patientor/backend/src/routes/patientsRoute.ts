@@ -15,7 +15,7 @@ router.get("/:id", (req, res) => {
   const id = req.params.id;
 
   try {
-    const patient = patientsService.getNonSensitivePatientById(id);
+    const patient = patientsService.getPatientById(id);
 
     if (!patient) {
       res.status(404).json({ error: "No patient found with this ID." });
