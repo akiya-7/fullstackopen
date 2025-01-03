@@ -4,9 +4,47 @@ export interface Diagnosis {
   latin?: string;
 }
 
-export interface Entry {
-  placeholder: unknown;
+interface AbstractBaseEntry {
+  id: string;
+  description: string;
+  date: string;
+  specialist: string;
+  diagnosisCodes?: Array<Diagnosis["code"]>;
 }
+
+export enum HealthCheckRating {
+  "Healthy" = 0,
+  "LowRisk" = 1,
+  "HighRisk" = 2,
+  "CriticalRisk" = 3,
+}
+
+interface HealthCheckEntry extends AbstractBaseEntry {
+  type: "HealthCheck";
+  healthCheckRating: HealthCheckRating;
+}
+
+interface HospitalEntry extends AbstractBaseEntry {
+  type: "Hospital";
+  discharge: {
+    date: string;
+    criteria: string;
+  };
+}
+
+interface OccupationalHealthcareEntry extends AbstractBaseEntry {
+  type: "OccupationalHealthcare";
+  employerName: string;
+  sickLeave?: {
+    startDate: string;
+    endDate: string;
+  };
+}
+
+export type Entry =
+  | HospitalEntry
+  | OccupationalHealthcareEntry
+  | HealthCheckEntry;
 
 export interface Patient {
   id: string;
@@ -19,9 +57,9 @@ export interface Patient {
 }
 
 export enum Gender {
-  MALE = "male",
-  FEMALE = "female",
-  OTHER = "other",
+  Male = "male",
+  Female = "female",
+  Other = "other",
 }
 
 export type NonSensitivePatient = Omit<Patient, "ssn" | "entries">;
