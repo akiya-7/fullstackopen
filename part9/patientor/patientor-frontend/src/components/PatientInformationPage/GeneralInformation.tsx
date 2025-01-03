@@ -7,11 +7,10 @@ interface Props {
   patient: Patient;
 }
 
-
 const GeneralInformationPage = ({patient}: Props) => {
 
   const GenderIcon = () => {
-    switch (patient?.gender) {
+    switch (patient.gender) {
       case "male":
         return <MaleIcon/>;
       case "female":
@@ -19,30 +18,31 @@ const GeneralInformationPage = ({patient}: Props) => {
       case "other":
         return <OtherIcon/>;
       default:
-        return <OtherIcon/>;
+        console.error(`Unhandled entry type: ${patient.gender}`);
+        return <p>Unknown entry type</p>;
     }
   };
 
   return (
     <div key={"general-information"}>
       <h2>
-        {patient?.name} <GenderIcon />
+        {patient.name} <GenderIcon />
       </h2>
       <table>
         <tbody>
-        <tr key={patient?.occupation}>
+        <tr key={patient.occupation}>
           <td>Occupation:</td>
-          <td>{patient?.occupation}</td>
+          <td>{patient.occupation}</td>
         </tr>
-        <tr key={patient?.ssn}>
+        <tr key={patient.ssn}>
           <td>SSN:</td>
-          <td>{patient?.ssn}</td>
+          <td>{patient.ssn}</td>
         </tr>
-        <tr key={patient?.dateOfBirth}>
+        <tr key={patient.dateOfBirth}>
           <td>Date of Birth:</td>
           <td>
-            {patient?.dateOfBirth
-              ? new Date(patient?.dateOfBirth).toDateString()
+            {patient.dateOfBirth
+              ? new Date(patient.dateOfBirth).toDateString()
               : null}
           </td>
         </tr>

@@ -24,5 +24,5 @@ export const usePatient = (patientId: string | undefined) => {
     fetchPatient();
   }, [patientId]);
 
-  return { patient, status };
+  return { patient, patientStatus: status };
 };

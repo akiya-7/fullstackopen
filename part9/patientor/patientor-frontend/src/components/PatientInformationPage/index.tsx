@@ -1,18 +1,18 @@
 import {useParams} from "react-router-dom";
 import {usePatient} from "../../hooks/usePatient";
 import GeneralInformation from "./GeneralInformation";
-import PatientEntries from "./PatientEntries"
+import PatientEntries from "./PatientEntries";
 
 
 const PatientInformationPage = () => {
 
   const {patientId} = useParams();
-  const { patient, status } = usePatient(patientId);
+  const { patient, patientStatus } = usePatient(patientId);
 
   console.log(patient);
 
   if(!patient) {
-    switch (status) {
+    switch (patientStatus) {
       case "loading":
         return <p>Getting patient details...</p>;
       case "not_found":
@@ -27,7 +27,7 @@ const PatientInformationPage = () => {
   return (
     <div>
       <GeneralInformation patient={patient} />
-      <PatientEntries patient={patient} />
+      <PatientEntries patient={patient}/>
     </div>);
 };
 
