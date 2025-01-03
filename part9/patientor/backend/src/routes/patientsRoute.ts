@@ -11,6 +11,22 @@ router.get("/", (_req, res: Response<NonSensitivePatient[]>) => {
   return;
 });
 
+router.get("/:id", (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const patient = patientsService.getNonSensitivePatientById(id);
+
+    if (!patient) {
+      res.status(404).json({ error: "No patient found with this ID." });
+    } else {
+      res.json(patient);
+    }
+  } catch {
+    res.status(500).json({ error: "An unexpected error occurred." });
+  }
+});
+
 router.post("/", (req, res) => {
   try {
     const validate: NewPatient = zodToNewPatient(req.body);
