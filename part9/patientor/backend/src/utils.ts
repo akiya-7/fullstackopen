@@ -93,29 +93,35 @@ const baseEntrySchema = z.object({
   diagnosisCodes: z.array(z.string()).optional(),
 });
 
-const healthCheckEntrySchema = baseEntrySchema.extend({
-  type: z.literal("HealthCheck"),
-  healthCheckRating: z.number().int().min(0).max(3),
-});
+const healthCheckEntrySchema = baseEntrySchema
+  .extend({
+    type: z.literal("HealthCheck"),
+    healthCheckRating: z.number().int().min(0).max(3),
+  })
+  .strip();
 
-const hospitalEntrySchema = baseEntrySchema.extend({
-  type: z.literal("Hospital"),
-  discharge: z.object({
-    date: z.string().date(),
-    criteria: z.string(),
-  }),
-});
+const hospitalEntrySchema = baseEntrySchema
+  .extend({
+    type: z.literal("Hospital"),
+    discharge: z.object({
+      date: z.string().date(),
+      criteria: z.string(),
+    }),
+  })
+  .strip();
 
-const occupationalHealthCareSchema = baseEntrySchema.extend({
-  type: z.literal("OccupationalHealthcare"),
-  employerName: z.string(),
-  sickLeave: z
-    .object({
-      startDate: z.string().date(),
-      endDate: z.string().date(),
-    })
-    .optional(),
-});
+const occupationalHealthCareSchema = baseEntrySchema
+  .extend({
+    type: z.literal("OccupationalHealthcare"),
+    employerName: z.string(),
+    sickLeave: z
+      .object({
+        startDate: z.string().date(),
+        endDate: z.string().date(),
+      })
+      .optional(),
+  })
+  .strip();
 
 export const toNewEntry = (object: unknown) => {
   const parsed = z.object({ type: z.string() }).parse(object);

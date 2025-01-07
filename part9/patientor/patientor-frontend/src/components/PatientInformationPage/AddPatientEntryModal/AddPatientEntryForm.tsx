@@ -1,84 +1,170 @@
-import {Box, Button, Grid, InputLabel, MenuItem, Select, TextField} from "@mui/material";
-import {FormEvent, useState} from "react";
-import {Diagnosis, PatientFormValues} from "../../../types";
+import {
+  Box,
+  Button,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material";
+import { FormEvent, useState } from "react";
+import {Entry, IHospitalEntry, NewEntry} from "../../../types";
 
 interface Props {
   onCancel: () => void;
-  onSubmit: (values: PatientFormValues) => void;
+  onSubmit: (values: NewEntry) => void;
 }
 
-const AddPatientEntryForm = ({onCancel, onSubmit}: Props) => {
+interface FormOption {
+  label: string,
+  value: string,
+}
+
+const AddPatientEntryForm = ({ onCancel, onSubmit }: Props) => {
+  const formOptions: FormOption[] = [
+    {
+      label: "Hospital",
+      value: "Hospital"
+    },
+    {
+      label: "Health Check",
+      value: "HealthCheck",
+    },
+    {
+      label: "Occupational Healthcare",
+      value: "OccupationalHealthcare",
+    },
+  ];
+  const [formType, setFormType] = useState<Entry["type"] | "">("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
   const [specialist, setSpecialist] = useState("");
-  const [diagnosisCodes, setDiagnosisCodes] = useState<Array<Diagnosis["code"]>>([]);
+  const [diagnosisCodes, setDiagnosisCodes] = useState("");
 
-  const [formType, setFormType] = useState("");
-
-  const formOptions: string[] = ["Hospital", "Occupational Healthcare", "Health Check"];
+  const [dischargeDate, setDischargeDate] = useState("");
+  const [dischargeCriteria, setDischargeCriteria] = useState("");
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
+    const baseEntry = {
+      type: formType,
+      date,
+      specialist,
+      description,
+      diagnosisCodes: diagnosisCodes ? diagnosisCodes.split(",") : undefined,
+    };
+
+    let entry: NewEntry;
+
+    if (!formType) {
+      alert("Form type must be selected.");
+      return;
+    }
+
+    switch (formType) {
+      case "Hospital":
+        entry = {
+          ...baseEntry,
+          discharge: { date: dischargeDate, criteria: dischargeCriteria },
+        } as Omit<IHospitalEntry, "id">;
+        break;
+      // case "HealthCheck":
+      //   entry = {
+      //     ...baseEntry,
+      //     healthCheckRating: healthCheckRating!,
+      //   };
+      //   break;
+      // case "OccupationalHealthcare":
+      //   entry = {
+      //     ...baseEntry,
+      //     employerName,
+      //     sickLeave: sickLeaveStartDate && sickLeaveEndDate
+      //       ? { startDate: sickLeaveStartDate, endDate: sickLeaveEndDate }
+      //       : undefined,
+      //   };
+      //   break;
+      default:
+        throw new Error("Invalid form type");
+    }
+
+    onSubmit(entry);
   };
 
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        <InputLabel style={{ marginTop: 20 }}>Entry Type:</InputLabel>
-        <Select
+        <Box sx={{ marginBottom: 3 }}>
+          <InputLabel>Entry Type:</InputLabel>
+          <Select
             label="Entry Type"
             fullWidth
             value={formType}
-            onChange={(e) => setFormType(e.target.value)}
-        >
-          {formOptions.map(option =>
-            <MenuItem
-              key={option}
-              value={option}
-            >
-              {option}
-            </MenuItem>
-          )}
-        </Select>
-        <Box sx={{margin : 3}}>
-          {formType && <TextField
+            onChange={(e) => setFormType(e.target.value as Entry["type"])}
+          >
+            {formOptions.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </Box>
+
+        {formType && (
+          <Box sx={{ marginBottom: 3 }}>
+            <TextField
               label="Description"
               fullWidth
               value={description}
-              onChange={({target}) => setDescription(target.value)}
-          />}
-          {formType && <TextField
+              onChange={({ target }) => setDescription(target.value)}
+            />
+            <TextField
               label="Date"
               placeholder={"YYYY-MM-DD"}
               fullWidth
               value={date}
-              onChange={({target}) => setDate(target.value)}
-          />}
-          {formType && <TextField
+              onChange={({ target }) => setDate(target.value)}
+            />
+            <TextField
               label="Specialist"
               fullWidth
               value={specialist}
-              onChange={({target}) => setSpecialist(target.value)}
-          />}
-        </Box>
-
-        <Box sx={{paddingBottom: 3}}>
-          {(formType === "Hospital") && <TextField
-              label="Specialist"
+              onChange={({ target }) => setSpecialist(target.value)}
+            />
+            <TextField
+              label="Diagnosis Codes"
+              placeholder={"S62.5, S03.5, ..."}
               fullWidth
-              value={specialist}
-              onChange={({target}) => setSpecialist(target.value)}
-          />}
-        </Box>
+              value={diagnosisCodes}
+              onChange={({ target }) => setDiagnosisCodes(target.value)}
+            />
+          </Box>
+        )}
 
+        {formType === "Hospital" && (
+          <Box sx={{ paddingBottom: 3 }}>
+            <TextField
+              label="Discharge Date"
+              placeholder={"YYYY-MM-DD"}
+              fullWidth
+              value={dischargeDate}
+              onChange={({ target }) => setDischargeDate(target.value)}
+            />
+            <TextField
+              label="Discharge Criteria"
+              fullWidth
+              value={dischargeCriteria}
+              onChange={({ target }) => setDischargeCriteria(target.value)}
+            />
+          </Box>
+        )}
 
         <Grid>
           <Grid item>
             <Button
               color="secondary"
               variant="contained"
-              style={{float: "left"}}
+              style={{ float: "left" }}
               type="button"
               onClick={onCancel}
             >
@@ -87,9 +173,7 @@ const AddPatientEntryForm = ({onCancel, onSubmit}: Props) => {
           </Grid>
           <Grid item>
             <Button
-              style={{
-                float: "right",
-              }}
+              style={{ float: "right" }}
               type="submit"
               variant="contained"
             >

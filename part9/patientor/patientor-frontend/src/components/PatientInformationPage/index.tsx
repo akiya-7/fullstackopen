@@ -3,18 +3,20 @@ import {usePatient} from "../../hooks/usePatient";
 import GeneralInformation from "./GeneralInformation";
 import PatientEntries from "./PatientEntries";
 import {useState} from "react";
-import {PatientFormValues} from "../../types";
+import {NewEntry} from "../../types";
 import axios from "axios";
+import patientService from "../../services/patients";
 import {Button} from "@mui/material";
 import AddPatientEntryModal from "./AddPatientEntryModal";
+import _ from "lodash";
+
 
 
 const PatientInformationPage = () => {
 
   const {patientId} = useParams();
-  const { patient, patientStatus } = usePatient(patientId);
+  const { patient, patientStatus, refetch } = usePatient(patientId);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-
 
   const [error, setError] = useState<string>();
 
@@ -41,25 +43,20 @@ const PatientInformationPage = () => {
     setError(undefined);
   };
 
-  const submitNewEntry = async (values: PatientFormValues) => {
-    console.log(values);
+  const submitNewEntry = async (values: NewEntry) => {
     try {
-  //     const patient = await patientService.create(values);
-  //     setPatients(patients.concat(patient));
+      await patientService.createEntry(patient.id, values);
+
       setModalOpen(false);
+      await refetch();
+
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
-        if (e?.response?.data && typeof e?.response?.data === "string") {
-          const message = e.response.data.replace(
-            "Something went wrong. Error: ",
-            "",
-          );
-          console.error(message);
-          setError(message);
-        } else {
-          setError("Unrecognized axios error");
+        if (e.response?.data.error) {
+          alert(`Invalid request: field "${_.startCase(e.response.data.error[0].path.join(" "))}" - ${e.response.data.error[0].message}`);
         }
-      } else {
+      }
+      else {
         console.error("Unknown error", e);
         setError("Unknown error");
       }
