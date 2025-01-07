@@ -87,9 +87,9 @@ export const zodToNewPatient = (object: unknown): NewPatient => {
 };
 
 const baseEntrySchema = z.object({
-  description: z.string(),
+  description: z.string().nonempty(),
   date: z.string().date(),
-  specialist: z.string(),
+  specialist: z.string().nonempty(),
   diagnosisCodes: z.array(z.string()).optional(),
 });
 
@@ -105,7 +105,7 @@ const hospitalEntrySchema = baseEntrySchema
     type: z.literal("Hospital"),
     discharge: z.object({
       date: z.string().date(),
-      criteria: z.string(),
+      criteria: z.string().nonempty(),
     }),
   })
   .strip();
@@ -113,7 +113,7 @@ const hospitalEntrySchema = baseEntrySchema
 const occupationalHealthCareSchema = baseEntrySchema
   .extend({
     type: z.literal("OccupationalHealthcare"),
-    employerName: z.string(),
+    employerName: z.string().nonempty(),
     sickLeave: z
       .object({
         startDate: z.string().date(),

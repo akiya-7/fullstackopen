@@ -4,11 +4,13 @@ import {
   Grid,
   InputLabel,
   MenuItem,
-  Select,
+  Select, Slider, Stack,
   TextField,
 } from "@mui/material";
 import { FormEvent, useState } from "react";
-import {Entry, IHospitalEntry, NewEntry} from "../../../types";
+import {Entry, IHealthCheckEntry, IHospitalEntry, IOccupationalHealthcareEntry, NewEntry} from "../../../types";
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import HeartBrokenIcon from '@mui/icons-material/HeartBroken';
 
 interface Props {
   onCancel: () => void;
@@ -44,6 +46,32 @@ const AddPatientEntryForm = ({ onCancel, onSubmit }: Props) => {
   const [dischargeDate, setDischargeDate] = useState("");
   const [dischargeCriteria, setDischargeCriteria] = useState("");
 
+  const [healthCheckRating, setHealthCheckRating] = useState<number>();
+
+  const [employerName, setEmployerName] = useState("");
+  const [sickLeaveStartDate, setSickLeaveStartDate] = useState("");
+  const [sickLeaveEndDate, setSickLeaveEndDate] = useState("");
+
+  const marks = [
+    {
+      value: 0,
+      label: 'Healthy',
+    },
+    {
+      value: 1,
+      label: 'Low Risk',
+    },
+    {
+      value: 2,
+      label: 'High Risk',
+    },
+    {
+      value: 3,
+      label: 'Critical Risk',
+    },
+  ];
+
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
@@ -69,21 +97,21 @@ const AddPatientEntryForm = ({ onCancel, onSubmit }: Props) => {
           discharge: { date: dischargeDate, criteria: dischargeCriteria },
         } as Omit<IHospitalEntry, "id">;
         break;
-      // case "HealthCheck":
-      //   entry = {
-      //     ...baseEntry,
-      //     healthCheckRating: healthCheckRating!,
-      //   };
-      //   break;
-      // case "OccupationalHealthcare":
-      //   entry = {
-      //     ...baseEntry,
-      //     employerName,
-      //     sickLeave: sickLeaveStartDate && sickLeaveEndDate
-      //       ? { startDate: sickLeaveStartDate, endDate: sickLeaveEndDate }
-      //       : undefined,
-      //   };
-      //   break;
+      case "HealthCheck":
+        entry = {
+          ...baseEntry,
+          healthCheckRating: healthCheckRating!,
+        } as Omit<IHealthCheckEntry, "id">;
+        break;
+      case "OccupationalHealthcare":
+        entry = {
+          ...baseEntry,
+          employerName,
+          sickLeave: sickLeaveStartDate && sickLeaveEndDate
+            ? { startDate: sickLeaveStartDate, endDate: sickLeaveEndDate }
+            : undefined,
+        } as Omit<IOccupationalHealthcareEntry, "id">;
+        break;
       default:
         throw new Error("Invalid form type");
     }
@@ -157,6 +185,53 @@ const AddPatientEntryForm = ({ onCancel, onSubmit }: Props) => {
               onChange={({ target }) => setDischargeCriteria(target.value)}
             />
           </Box>
+        )}
+
+        {formType === "HealthCheck" && (
+            <Box sx={{ paddingBottom: 5 }}>
+              <InputLabel>Health Check Rating:</InputLabel>
+              <Stack direction="row" spacing={3}>
+                <FavoriteIcon />
+                <Slider
+                  aria-label="HealthCheckRating"
+                  defaultValue={0}
+                  valueLabelDisplay="off"
+                  step={1}
+                  marks={marks}
+                  min={0}
+                  max={3}
+                  onChange={ (_, newValue) => {setHealthCheckRating(newValue as number);}}
+                />
+                <HeartBrokenIcon />
+              </Stack>
+            </Box>
+        )}
+
+        {formType === "OccupationalHealthcare" && (
+          <>
+            <Box sx={{paddingBottom: 3}}>
+              <TextField
+                label="Employer Name"
+                fullWidth
+                value={employerName}
+                onChange={({target}) => setEmployerName(target.value)}/>
+          </Box>
+            <Box sx={{paddingBottom: 3}}>
+              <InputLabel>Sick Leave</InputLabel>
+                <TextField
+                  label="Start Date"
+                  placeholder={"YYYY-MM-DD"}
+                  fullWidth
+                  value={sickLeaveStartDate}
+                  onChange={({target}) => setSickLeaveStartDate(target.value)}/>
+                <TextField
+                  label="End Date"
+                  placeholder={"YYYY-MM-DD"}
+                  fullWidth
+                  value={sickLeaveEndDate}
+                  onChange={({target}) => setSickLeaveEndDate(target.value)}/>
+            </Box>
+          </>
         )}
 
         <Grid>
