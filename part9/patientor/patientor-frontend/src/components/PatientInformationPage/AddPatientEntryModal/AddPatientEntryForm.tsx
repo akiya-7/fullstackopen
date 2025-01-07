@@ -11,6 +11,11 @@ import { FormEvent, useState } from "react";
 import {Entry, IHealthCheckEntry, IHospitalEntry, IOccupationalHealthcareEntry, NewEntry} from "../../../types";
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import HeartBrokenIcon from '@mui/icons-material/HeartBroken';
+import {DatePicker} from "@mui/x-date-pickers";
+import dayjs from "dayjs";
+
+dayjs("1240-12-12");
+
 
 interface Props {
   onCancel: () => void;
@@ -146,12 +151,10 @@ const AddPatientEntryForm = ({ onCancel, onSubmit }: Props) => {
               value={description}
               onChange={({ target }) => setDescription(target.value)}
             />
-            <TextField
+            <DatePicker
               label="Date"
-              placeholder={"YYYY-MM-DD"}
-              fullWidth
-              value={date}
-              onChange={({ target }) => setDate(target.value)}
+              slotProps={{ textField: { fullWidth: true } }}
+              onChange={(e) => {if (e) setDate(e.format('YYYY-MM-DD'));}}
             />
             <TextField
               label="Specialist"
@@ -171,12 +174,10 @@ const AddPatientEntryForm = ({ onCancel, onSubmit }: Props) => {
 
         {formType === "Hospital" && (
           <Box sx={{ paddingBottom: 3 }}>
-            <TextField
+            <DatePicker
               label="Discharge Date"
-              placeholder={"YYYY-MM-DD"}
-              fullWidth
-              value={dischargeDate}
-              onChange={({ target }) => setDischargeDate(target.value)}
+              slotProps={{ textField: { fullWidth: true } }}
+              onChange={(e) => {if (e) setDischargeDate(e.format('YYYY-MM-DD'));}}
             />
             <TextField
               label="Discharge Criteria"
@@ -218,18 +219,16 @@ const AddPatientEntryForm = ({ onCancel, onSubmit }: Props) => {
           </Box>
             <Box sx={{paddingBottom: 3}}>
               <InputLabel>Sick Leave</InputLabel>
-                <TextField
-                  label="Start Date"
-                  placeholder={"YYYY-MM-DD"}
-                  fullWidth
-                  value={sickLeaveStartDate}
-                  onChange={({target}) => setSickLeaveStartDate(target.value)}/>
-                <TextField
-                  label="End Date"
-                  placeholder={"YYYY-MM-DD"}
-                  fullWidth
-                  value={sickLeaveEndDate}
-                  onChange={({target}) => setSickLeaveEndDate(target.value)}/>
+              <DatePicker
+                label="Start Date"
+                slotProps={{ textField: { fullWidth: true } }}
+                onChange={(e) => {if (e) setSickLeaveStartDate(e.format('YYYY-MM-DD'));}}
+              />
+              <DatePicker
+                label="End Date"
+                slotProps={{ textField: { fullWidth: true } }}
+                onChange={(e) => {if (e) setSickLeaveEndDate(e.format('YYYY-MM-DD'));}}
+              />
             </Box>
           </>
         )}
